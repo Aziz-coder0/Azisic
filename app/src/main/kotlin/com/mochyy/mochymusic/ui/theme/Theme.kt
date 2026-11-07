@@ -24,10 +24,10 @@ import com.materialkolor.dynamiccolor.ColorSpec
 import com.materialkolor.rememberDynamicColorScheme
 import com.materialkolor.score.Score
 
-val DefaultThemeColor = Color(0xFFFFA35C)
-internal val AzisicBackground = Color(0xFF130E20)
-internal val AzisicSurface = Color(0xFF1C142A)
-internal val AzisicSurfaceRaised = Color(0xFF291D3D)
+val DefaultThemeColor = Color(0xFFFFA653)
+internal val AzisicBackground = Color(0xFF120E19)
+internal val AzisicSurface = Color(0xFF211829)
+internal val AzisicSurfaceRaised = Color(0xFF30223B)
 
 /**
  * mochy renders dark-only.
@@ -70,12 +70,12 @@ fun MochyTheme(
                 onSurfaceVariant = Color(0xFFD8C9E4),
                 surfaceTint = DefaultThemeColor,
                 surfaceDim = AzisicBackground,
-                surfaceBright = Color(0xFF352749),
+                surfaceBright = Color(0xFF3D2C4B),
                 surfaceContainerLowest = AzisicBackground,
                 surfaceContainerLow = Color(0xFF181123),
                 surfaceContainer = AzisicSurface,
                 surfaceContainerHigh = AzisicSurfaceRaised,
-                surfaceContainerHighest = Color(0xFF352749),
+                surfaceContainerHighest = Color(0xFF3D2C4B),
                 outline = Color(0xFF9A86AB),
                 outlineVariant = Color(0xFF564467),
             )

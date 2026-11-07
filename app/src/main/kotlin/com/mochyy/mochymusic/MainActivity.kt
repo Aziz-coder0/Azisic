@@ -1138,7 +1138,6 @@ class MainActivity : ComponentActivity() {
                                         } else {
                                             AppNavigationBar(
                                                 navigationItems = navigationItems,
-                                                currentRoute = currentRoute,
                                                 selectedTabRoute = selectedTabRoute,
                                                 onItemClick = onNavItemClick,
                                                 pureBlack = pureBlack,

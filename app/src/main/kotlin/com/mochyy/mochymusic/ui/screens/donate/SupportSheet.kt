@@ -25,7 +25,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.mochyy.mochymusic.core.updater.GithubRepoUrl
+import com.mochyy.mochymusic.core.updater.AzisicRepoUrl
 import com.mochyy.mochymusic.ui.component.PopupSheetHandleHeight
 import com.mochyy.mochymusic.ui.component.PopupSheetState
 import com.mochyy.mochymusic.ui.screens.update.openUrl
@@ -70,14 +70,14 @@ private fun SupportSheetContent() {
             DonateCharacter(width = characterWidth)
             Spacer(Modifier.height(14.dp))
             Text(
-                text = "Enjoying Mochy Music?",
+                text = "Azisic",
                 fontSize = 13.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = DonateSoftText,
             )
             Spacer(Modifier.height(6.dp))
             Text(
-                text = "Support Mochy’s development!",
+                text = "Support the project",
                 fontSize = 32.sp,
                 lineHeight = 36.sp,
                 fontWeight = FontWeight.Bold,
@@ -87,9 +87,7 @@ private fun SupportSheetContent() {
             )
             Spacer(Modifier.height(14.dp))
             Text(
-                text = "thanks for trying it out! btw, Mochy Music will always be free, forever yours! <3\n\n" +
-                    "It would be very useful for us if you support the developer, no matter how small it is!! <3\n" +
-                    "giving a star to Mochy’s repo is already enough. and thanks again!",
+                text = "Star Azisic on GitHub or support the maintainers of the original project.",
                 fontSize = 13.5.sp,
                 lineHeight = 18.sp,
                 fontWeight = FontWeight.Bold,
@@ -107,18 +105,18 @@ private fun SupportButtons(popup: PopupSheetState) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             DonatePillButton(
-                text = "Donate Us!",
+                text = "Upstream donations",
                 onClick = { popup.showDonateSheet() },
                 modifier = Modifier.weight(1f),
             )
             DonatePillButton(
-                text = "Star the repo!",
-                onClick = { context.openUrl(GithubRepoUrl) },
+                text = "Star Azisic",
+                onClick = { context.openUrl(AzisicRepoUrl) },
                 modifier = Modifier.weight(1f),
             )
         }
         DonatePillButton(
-            text = "get these beggar outta here, No!",
+            text = "Done",
             onClick = popup::dismiss,
             quiet = true,
         )

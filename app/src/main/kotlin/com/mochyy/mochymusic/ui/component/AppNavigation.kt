@@ -6,7 +6,10 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -18,6 +21,8 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
@@ -25,8 +30,6 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -35,22 +38,28 @@ import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalViewConfiguration
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import com.mochyy.mochymusic.LocalGlassState
+import com.mochyy.mochymusic.constants.ChromeGlassStyle
+import com.mochyy.mochymusic.constants.ChromeGlassStyleKey
+import com.mochyy.mochymusic.constants.SlimNavBarHeight
 import com.mochyy.mochymusic.ui.screens.Screens
+import com.mochyy.mochymusic.utils.rememberEnumPreference
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.getValue
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.Alignment
 import androidx.compose.foundation.layout.size
-import com.mochyy.mochymusic.LocalGlassState
 
 @Immutable
 private data class NavItemState(
@@ -227,7 +236,6 @@ private val NavHighlightTrail = spring<Float>(dampingRatio = 0.82f, stiffness = 
 @Composable
 fun AppNavigationBar(
     navigationItems: List<Screens>,
-    currentRoute: String?,
     /** from [owningTab]: the tab the page on screen belongs to */
     selectedTabRoute: String,
     onItemClick: (Screens, Boolean) -> Unit,
@@ -237,50 +245,33 @@ fun AppNavigationBar(
     /** a second quick tap on Search: straight into typing */
     onSearchDoubleTap: (() -> Unit)? = null
 ) {
-    val glassState = LocalGlassState.current ?: remember { GlassState() }
-    val accentWash = rememberChromeAccentWash()
-    val selectedIndex = navigationItems.indexOfFirst { it.route == selectedTabRoute }
-
-    Box(modifier = modifier) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Horizontal))
-                .padding(horizontal = 24.dp, vertical = 8.dp)
-                .align(Alignment.TopCenter)
-                .height(NavBarHeight)
-                .press3D(maxTilt = 4f, pressedScale = 0.985f)
-                .dropShadow(NavBarShape, ChromeShadow)
-                .clip(NavBarShape)
-                .drawWithContent {
-                    drawContent()
-                    drawChromeOutline(Offset.Zero, size, cornerRadius = size.height / 2f)
-                }
-        ) {
+    val colors = MaterialTheme.colorScheme
+    val glassStyle by rememberEnumPreference(ChromeGlassStyleKey, defaultValue = ChromeGlassStyle.FROSTED)
+    Box(modifier.fillMaxWidth().background(if (pureBlack) Color.Black else colors.background)) {
+        if (glassStyle == ChromeGlassStyle.MODULE) {
             FrostedChromeGlass(
-                state = glassState,
+                state = LocalGlassState.current ?: remember { GlassState() },
                 pureBlack = pureBlack,
-                accentWash = accentWash,
-                modifier = Modifier.fillMaxSize(),
+                accentWash = rememberChromeAccentWash(),
+                modifier = Modifier.matchParentSize(),
             )
-
-            Row(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = NavRowPadding)
-                    .navHighlight(selectedIndex, navigationItems.size),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                navigationItems.forEach { screen ->
-                    // lit = the tab this page belongs to. what a tap on it does (scroll to the top
-                    // on the tab's own page, back to that page from deeper in) is the caller's call
-                    NavTab(
-                        screen = screen,
-                        isSelected = screen.route == selectedTabRoute,
-                        onItemClick = onItemClick,
-                        onDoubleTap = onSearchDoubleTap.takeIf { screen == Screens.Search },
-                    )
-                }
+        }
+        Row(
+            modifier = Modifier.align(Alignment.TopCenter)
+                .fillMaxWidth()
+                .height(if (slimNav) SlimNavBarHeight else NavBarHeight + 16.dp)
+                .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Horizontal))
+                .padding(horizontal = 12.dp, vertical = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            navigationItems.forEach { screen ->
+                NavTab(
+                    screen = screen,
+                    isSelected = screen.route == selectedTabRoute,
+                    onItemClick = onItemClick,
+                    onDoubleTap = onSearchDoubleTap.takeIf { screen == Screens.Search },
+                    showLabel = !slimNav,
+                )
             }
         }
     }
@@ -358,6 +349,7 @@ internal fun RowScope.NavTab(
     isSelected: Boolean,
     onItemClick: (Screens, Boolean) -> Unit,
     onDoubleTap: (() -> Unit)?,
+    showLabel: Boolean = false,
 ) {
     val viewConfiguration = LocalViewConfiguration.current
     val interactionSource = remember { MutableInteractionSource() }
@@ -373,26 +365,42 @@ internal fun RowScope.NavTab(
     val litIcon = coil3.compose.rememberAsyncImagePainter(model = screen.iconIdActive)
     val iconSize = if (screen == Screens.Home || screen == Screens.Search) 22.dp else 24.dp
 
-    Box(
+    val colors = MaterialTheme.colorScheme
+    val label = stringResource(screen.titleId)
+    val tint = if (isSelected) colors.primary else colors.onSurfaceVariant
+
+    Column(
         modifier = Modifier
             .weight(1f)
             .fillMaxHeight()
+            .semantics { selected = isSelected }
             .pressBounce(interactionSource, pressedScale = 0.85f)
             .clickable(
                 interactionSource = interactionSource,
                 indication = RemoteFocus,
+                role = Role.Tab,
                 onClick = {
                     tabTapped(lastTap, viewConfiguration.doubleTapTimeoutMillis, onDoubleTap) {
                         onItemClick(screen, isSelected)
                     }
                 }
             ),
-        contentAlignment = Alignment.Center
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterVertically),
     ) {
-        if (screen == Screens.Library) {
-            LibraryDownloadIcon { TabIcons(screen, unlitIcon, litIcon, iconSize) { lit.value } }
-        } else {
-            TabIcons(screen, unlitIcon, litIcon, iconSize) { lit.value }
+        val icon: @Composable () -> Unit = {
+            TabIcons(label.takeUnless { showLabel }, unlitIcon, litIcon, iconSize, tint) { lit.value }
+        }
+        if (screen == Screens.Library) LibraryDownloadIcon(icon) else icon()
+        if (showLabel) {
+            Text(
+                label,
+                color = tint,
+                style = MaterialTheme.typography.labelSmall,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.padding(horizontal = 2.dp),
+            )
         }
     }
 }
@@ -400,17 +408,18 @@ internal fun RowScope.NavTab(
 /** a tab's two icons, the filled one fading in over the outline as the tab lights up */
 @Composable
 private fun TabIcons(
-    screen: Screens,
+    label: String?,
     unlitIcon: androidx.compose.ui.graphics.painter.Painter,
     litIcon: androidx.compose.ui.graphics.painter.Painter,
     iconSize: androidx.compose.ui.unit.Dp,
+    tint: Color,
     lit: () -> Float,
 ) {
     Box(contentAlignment = Alignment.Center) {
         Icon(
             painter = unlitIcon,
-            contentDescription = stringResource(screen.titleId),
-            tint = Color.White,
+            contentDescription = label,
+            tint = tint,
             modifier = Modifier
                 .size(iconSize)
                 .graphicsLayer {
@@ -421,7 +430,7 @@ private fun TabIcons(
         Icon(
             painter = litIcon,
             contentDescription = null,
-            tint = Color.White,
+            tint = tint,
             modifier = Modifier
                 .size(iconSize)
                 .graphicsLayer {

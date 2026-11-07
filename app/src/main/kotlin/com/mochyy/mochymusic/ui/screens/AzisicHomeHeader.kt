@@ -1,121 +1,128 @@
 package com.mochyy.mochymusic.ui.screens
 
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Canvas
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.mochyy.mochymusic.ui.theme.AzisicBackground
-import com.mochyy.mochymusic.ui.theme.AzisicSurface
-import com.mochyy.mochymusic.ui.theme.DefaultThemeColor
+import coil3.compose.AsyncImage
+import com.mochyy.mochymusic.R
+import com.mochyy.mochymusic.models.MediaMetadata
 
 @Composable
 internal fun AzisicHomeHeader(
-    trackTitle: String?,
-    onPlayCurrent: () -> Unit,
+    track: MediaMetadata?,
+    onOpenPlayer: () -> Unit,
     onSearch: () -> Unit,
     onLiked: () -> Unit,
     onHistory: () -> Unit,
+    onLibrary: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val panel = RoundedCornerShape(28.dp)
-    var drawn by remember { mutableStateOf(false) }
-    LaunchedEffect(Unit) { drawn = true }
-    val recordReveal by animateFloatAsState(if (drawn) 1f else 0.5f, tween(540), label = "Home record reveal")
+    val colors = MaterialTheme.colorScheme
 
-    Column(modifier, verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        Box(
-            Modifier.fillMaxWidth().clip(panel)
-                .background(Brush.linearGradient(listOf(Color(0xFF45265E), Color(0xFF25183D))))
-                .border(1.dp, Color(0xFF674881), panel)
-        ) {
-            Canvas(
-                Modifier.size(190.dp).align(Alignment.CenterEnd).graphicsLayer {
-                    alpha = recordReveal * 0.75f
-                    scaleX = recordReveal
-                    scaleY = recordReveal
-                }
-            ) {
-                val center = Offset(size.width * 0.86f, size.height * 0.54f)
-                for (groove in 1..9) {
-                    drawCircle(
-                        color = DefaultThemeColor.copy(alpha = if (groove == 9) 0.40f else 0.13f),
-                        radius = size.minDimension * (0.07f + groove * 0.055f),
-                        center = center,
-                        style = Stroke(1.dp.toPx()),
-                    )
-                }
-                drawCircle(DefaultThemeColor, radius = 4.dp.toPx(), center = center)
-            }
-            Column(
-                Modifier.fillMaxWidth(0.82f).padding(horizontal = 20.dp, vertical = 18.dp),
-                verticalArrangement = Arrangement.spacedBy(6.dp),
-            ) {
-                Text("LISTENING ROOM", color = DefaultThemeColor, fontSize = 10.sp, letterSpacing = 2.2.sp, fontWeight = FontWeight.Bold)
-                Text(
-                    if (trackTitle == null) "Find your next\nfavorite." else trackTitle,
-                    color = Color(0xFFF8EFFC),
-                    fontSize = 30.sp,
-                    lineHeight = 32.sp,
-                    fontWeight = FontWeight.Bold,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                )
-                FilledTonalButton(
-                    onClick = if (trackTitle == null) onSearch else onPlayCurrent,
-                    colors = ButtonDefaults.filledTonalButtonColors(containerColor = DefaultThemeColor, contentColor = AzisicBackground),
-                ) {
-                    Text(if (trackTitle == null) "Search music" else "Open player", fontWeight = FontWeight.SemiBold)
-                }
-            }
+    Column(modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            HomeShortcut(stringResource(R.string.liked_songs), R.drawable.favorite, colors.primaryContainer, onLiked, Modifier.weight(1f))
+            HomeShortcut(stringResource(R.string.history), R.drawable.history, colors.secondaryContainer, onHistory, Modifier.weight(1f))
         }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            HomeShortcut("Liked songs", onLiked, Modifier.weight(1f))
-            HomeShortcut("History", onHistory, Modifier.weight(1f))
+            HomeShortcut(stringResource(R.string.your_library), R.drawable.library_music, colors.surfaceContainerHighest, onLibrary, Modifier.weight(1f))
+            HomeShortcut(stringResource(R.string.search), R.drawable.search_filled, colors.surfaceContainerHigh, onSearch, Modifier.weight(1f))
+        }
+        if (track != null) {
+            Text(
+                text = stringResource(R.string.now_playing),
+                style = MaterialTheme.typography.titleLarge,
+                color = colors.onSurface,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(top = 12.dp),
+            )
+            Row(
+                Modifier.fillMaxWidth()
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(colors.surfaceContainer)
+                    .clickable(role = Role.Button, onClick = onOpenPlayer)
+                    .padding(10.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Box(
+                    Modifier.size(52.dp).clip(RoundedCornerShape(4.dp)).background(colors.surfaceContainerHighest),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Icon(painterResource(R.drawable.music_note), null, tint = colors.onSurfaceVariant)
+                    AsyncImage(track.thumbnailUrl, null, Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
+                }
+                Column(Modifier.weight(1f)) {
+                    Text(track.title, style = MaterialTheme.typography.titleMedium, color = colors.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Text(
+                        track.artists.joinToString(", ") { it.name },
+                        color = colors.onSurfaceVariant,
+                        style = MaterialTheme.typography.bodyMedium,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
+                Box(Modifier.size(36.dp).background(colors.primary, CircleShape), contentAlignment = Alignment.Center) {
+                    Icon(
+                        painterResource(R.drawable.arrow_forward), null,
+                        tint = colors.onPrimary, modifier = Modifier.size(19.dp),
+                    )
+                }
+            }
         }
     }
 }
 
 @Composable
-private fun HomeShortcut(label: String, onClick: () -> Unit, modifier: Modifier) {
-    val shape = RoundedCornerShape(15.dp)
+private fun HomeShortcut(label: String, @DrawableRes icon: Int, tileColor: Color, onClick: () -> Unit, modifier: Modifier) {
+    val colors = MaterialTheme.colorScheme
     Row(
-        modifier.clip(shape).background(AzisicSurface).border(1.dp, Color(0xFF3B2A50), shape)
-            .clickable(onClick = onClick).padding(horizontal = 12.dp, vertical = 13.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier.clip(RoundedCornerShape(8.dp))
+            .background(colors.surfaceContainer)
+            .clickable(role = Role.Button, onClick = onClick)
+            .heightIn(min = 56.dp),
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(label, color = Color(0xFFF8EFFC), fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
-        Text("↗", color = DefaultThemeColor, fontSize = 13.sp)
+        Box(
+            Modifier.size(48.dp, 56.dp).background(tileColor),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(painterResource(icon), null, tint = colors.onSurface, modifier = Modifier.size(21.dp))
+        }
+        Text(
+            label,
+            style = MaterialTheme.typography.labelLarge,
+            color = colors.onSurface,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.weight(1f).padding(end = 7.dp),
+        )
     }
 }

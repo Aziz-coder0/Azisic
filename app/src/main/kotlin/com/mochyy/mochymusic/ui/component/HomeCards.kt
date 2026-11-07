@@ -51,17 +51,16 @@ import com.mochyy.mochymusic.constants.GridItemSize
 import com.mochyy.mochymusic.ui.theme.InterFontFamily
 import coil3.compose.AsyncImage
 
-// spacing and type straight from the Figma home frames (13:11 / 14:212)
-val HomeContentInset = 36.dp
+val HomeContentInset = 20.dp
 val HomeCardSpacing = 15.dp
 
-private val HomeTracking = (-0.06).em
+private val HomeTracking = (-0.02).em
 
 val HomeLabelStyle = TextStyle(
     fontFamily = InterFontFamily,
     fontWeight = FontWeight.Bold,
-    fontSize = 16.sp,
-    lineHeight = 19.sp,
+    fontSize = 22.sp,
+    lineHeight = 27.sp,
     letterSpacing = HomeTracking,
 )
 
@@ -96,8 +95,8 @@ private val HomeRankStyle = TextStyle(
     letterSpacing = HomeTracking,
 )
 
-private val SectionLabelColor = Color.White.copy(alpha = 0.69f)
-private val HomeRowShape = RoundedCornerShape(14.dp)
+private val SectionLabelColor = Color(0xFFF6EFFB)
+private val HomeRowShape = RoundedCornerShape(8.dp)
 val HomeRowHeight = 54.dp
 
 /**

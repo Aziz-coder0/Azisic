@@ -402,8 +402,12 @@
     <string name="playback_error_channel_name">Playback errors</string>
     <string name="playing_music_video_audio">YouTube wouldn\'t play this song, so you\'re hearing its music video instead</string>
     <string name="azisic_developer_credit">Customized and enhanced by Abdul Agantal Omar</string>
-    <string name="azisic_upstream_credit">Based on Mochy Music. Licensed under GPL-3.0.</string>
+    <string name="azisic_upstream_credit">Azisic is licensed under GPL-3.0. See the upstream notices for project credits.</string>
     <string name="azisic_sleep_preset_minutes">%1$d min</string>
     <string name="azisic_developer_title">Developer</string>
     <string name="azisic_developer_name">Abdul Agantal Omar</string>
+    <string name="azisic_choose_track">Choose a track</string>
+    <string name="azisic_unlike_track">Remove from Liked songs</string>
+    <string name="azisic_player_layouts">Layouts</string>
+    <string name="azisic_welcome_description">Play your library or find something new.</string>
 </resources>

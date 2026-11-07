@@ -44,7 +44,7 @@ class CrashHandler private constructor(
         }.toString()
 
         return buildString {
-            appendLine("mochy Crash Report")
+            appendLine("Azisic Crash Report")
             appendLine("=".repeat(50))
             appendLine()
             appendLine("Manufacturer: ${Build.MANUFACTURER}")

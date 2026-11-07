@@ -12,15 +12,17 @@ If you installed the v1.0.0 Azisic preview, export your data from **Settings →
 
 ## What’s inside
 
-- **Listening Room** is the Azisic home screen. It has shortcuts to Search, Liked Songs, and History.
-- **Pulse Deck** is the default Now Playing layout, with large album art and fade transitions.
-- **Night Session** is a compact player with an animated record. Switch layouts with the buttons below playback controls.
+The v1.2.0 source includes the new interface. The download instructions above are for the v1.1.0 preview.
+
+- **Home** puts Liked Songs, History, Library, and Search in a two-column grid. Your existing shelves sit below it.
+- **Search and Library** use artwork tiles and clearer category filters.
+- **Pulse Deck** puts the cover front and center. **Night Session** pairs a rotating record with a compact track view. Switch layouts below the controls in Now Playing.
 - The player menu includes **15-, 30-, and 60-minute sleep timer presets**.
 - **Profile → Developer** lists Abdul Agantal Omar and links to the open-source notices.
 
 ## Preview status
 
-The APK installed and showed the welcome screen in an Android emulator. A music service timeout in that emulator prevented completion of the Home and playback checks.
+The v1.1.0 APK installed and showed the welcome screen in an Android emulator. A music service timeout in that emulator prevented completion of the Home and playback checks.
 
 ## Build locally
 

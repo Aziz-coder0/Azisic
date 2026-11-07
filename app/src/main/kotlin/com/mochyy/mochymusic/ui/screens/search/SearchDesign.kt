@@ -8,7 +8,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.PaddingValues
@@ -18,6 +17,7 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -53,19 +53,19 @@ import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.asComposeRenderEffect
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -86,8 +86,12 @@ import com.mochyy.mochymusic.ui.utils.resize
 import com.mochyy.mochymusic.ui.component.containerTransformSource
 import com.mochyy.mochymusic.ui.utils.stableStatusBars
 import com.mochyy.mochymusic.ui.component.RemoteFocus
+import com.mochyy.mochymusic.ui.theme.AzisicBackground
+import com.mochyy.mochymusic.ui.theme.AzisicSurface
+import com.mochyy.mochymusic.ui.theme.AzisicSurfaceRaised
+import com.mochyy.mochymusic.ui.theme.DefaultThemeColor
 
-val SearchHorizontalPadding = 24.dp
+val SearchHorizontalPadding = 20.dp
 
 val SearchFieldHeight = 48.dp
 
@@ -98,16 +102,16 @@ val SearchTitleBlockHeight = 62.dp
 val SearchTopClearance = 18.dp
 
 object SearchColors {
-    val Field = Color(0xFF141416)
-    val FieldFocused = Color(0xFF1E1E21)
-    val Tile = Color(0xFF121214)
-    val TileHigh = Color(0xFF1C1C1F)
-    val Divider = Color(0xFF232326)
-    val Primary = Color.White
-    val Secondary = Color(0xFF9A9AA0)
-    val Placeholder = Color(0xFF77777D)
+    val Field = AzisicSurfaceRaised
+    val FieldFocused = Color(0xFF40304D)
+    val Tile = AzisicSurface
+    val TileHigh = AzisicSurfaceRaised
+    val Divider = Color(0xFF392F41)
+    val Primary = Color(0xFFF6EFFB)
+    val Secondary = Color(0xFFBCB0C7)
+    val Placeholder = Color(0xFFC7BBD1)
 
-    fun page(pureBlack: Boolean): Color = Color.Black
+    fun page(pureBlack: Boolean): Color = if (pureBlack) Color.Black else AzisicBackground
 }
 
 val SearchCollapseEasing = CubicBezierEasing(0.57f, 0.53f, 0f, 1f)
@@ -480,7 +484,7 @@ fun SearchField(
         modifier = modifier
             .fillMaxWidth()
             .height(SearchFieldHeight)
-            .clip(RoundedCornerShape(50))
+            .clip(RoundedCornerShape(8.dp))
             .background(if (focused) SearchColors.FieldFocused else SearchColors.Field)
             .then(
                 if (readOnlyClick != null) {
@@ -518,7 +522,7 @@ fun SearchField(
                     textStyle = LocalTextStyle.current.merge(
                         TextStyle(color = SearchColors.Primary, fontSize = 15.sp)
                     ),
-                    cursorBrush = SolidColor(SearchColors.Primary),
+                    cursorBrush = SolidColor(DefaultThemeColor),
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                     keyboardActions = KeyboardActions(onSearch = { onSearch(value.text) }),
                     modifier = Modifier
@@ -593,131 +597,38 @@ fun MoodTile(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val tint = remember(stripeColor) { moodTint(stripeColor) }
-
-    var titleWraps by remember(title) { mutableStateOf(false) }
-
-    val tileBrush = remember(tint) {
-        Brush.linearGradient(
-            colors = listOf(
-                blendOver(tint.copy(alpha = 0.55f), SearchColors.Tile),
-                blendOver(tint.copy(alpha = 0.16f), SearchColors.Tile),
-            )
-        )
-    }
+    val tileColor = remember(stripeColor) { blendOver(moodTint(stripeColor).copy(alpha = 0.48f), AzisicSurface) }
+    val cover = covers.firstOrNull { !it.isNullOrBlank() }
 
     Box(
         modifier = modifier
-            .height(76.dp)
-            .clip(RoundedCornerShape(14.dp))
-
-            .background(brush = tileBrush)
-            .clickable(onClick = onClick),
+            .height(96.dp)
+            .clip(RoundedCornerShape(8.dp))
+            .background(tileColor)
+            .clickable(role = Role.Button, onClick = onClick),
     ) {
-
-        Box(
-            modifier = Modifier
-                .align(Alignment.CenterEnd)
-                .padding(end = 2.dp)
-                .size(width = 84.dp, height = 76.dp)
-
-                .then(
-                    if (titleWraps) {
-                        Modifier.graphicsLayer {
-                            compositingStrategy = CompositingStrategy.Offscreen
-                        }
-                    } else {
-                        Modifier
-                    }
-                )
-                .drawWithCache {
-                    val fade = Brush.horizontalGradient(
-                        0.00f to Color.Transparent,
-                        0.42f to Color.Black.copy(alpha = 0.55f),
-                        0.70f to Color.Black,
-                    )
-                    onDrawWithContent {
-                        drawContent()
-                        if (titleWraps) drawRect(brush = fade, blendMode = BlendMode.DstIn)
-                    }
-                },
-        ) {
-
-            LayeredCover(
-                url = covers.getOrNull(1),
-                rotation = -24f,
-                offsetX = (-2).dp,
-                offsetY = 2.dp,
-                size = 44.dp,
-
-                alpha = 1f,
-            )
-            LayeredCover(
-                url = covers.getOrNull(0),
-                rotation = -6f,
-                offsetX = 28.dp,
-                offsetY = 13.dp,
-                size = 48.dp,
-                alpha = 1f,
-            )
-        }
-
-        Text(
-            text = title,
-            style = MaterialTheme.typography.titleMedium.copy(
-                fontSize = 15.sp,
-                fontWeight = FontWeight.SemiBold,
-
-                lineHeight = 17.sp,
-            ),
-            color = SearchColors.Primary,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-            onTextLayout = { result ->
-                val wraps = result.lineCount > 1
-                if (wraps != titleWraps) titleWraps = wraps
-            },
-            modifier = Modifier
-                .align(Alignment.CenterStart)
-                .padding(start = 14.dp, end = 70.dp),
-        )
-    }
-}
-
-@Composable
-private fun BoxScope.LayeredCover(
-    url: String?,
-    rotation: Float,
-    offsetX: Dp,
-    offsetY: Dp,
-    size: Dp,
-    alpha: Float,
-) {
-    val density = LocalDensity.current
-    Box(
-        modifier = Modifier
-            .align(Alignment.CenterStart)
-            .size(size)
-            .graphicsLayer {
-                rotationZ = rotation
-                translationX = with(density) { offsetX.toPx() }
-                translationY = with(density) { offsetY.toPx() }
-                this.alpha = alpha
-
-                shape = RoundedCornerShape(8.dp)
-                clip = true
-            }
-            .background(SearchColors.TileHigh),
-    ) {
-        if (url != null) {
+        if (cover != null) {
             AsyncImage(
-
-                model = url.resize(128, 128),
+                model = cover.resize(192, 192),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.align(Alignment.BottomEnd)
+                    .offset(x = 8.dp, y = 14.dp)
+                    .size(60.dp)
+                    .graphicsLayer { rotationZ = 19f }
+                    .clip(RoundedCornerShape(4.dp)),
             )
         }
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            color = if (tileColor.luminance() > 0.18f) Color.Black else SearchColors.Primary,
+            maxLines = 3,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.align(Alignment.TopStart)
+                .padding(start = 12.dp, top = 10.dp, end = if (cover == null) 12.dp else 54.dp),
+        )
     }
 }
 
@@ -749,7 +660,7 @@ fun SearchCategoryRow(
                 modifier = Modifier
                     .height(34.dp)
                     .clip(RoundedCornerShape(50))
-                    .background(if (selected) Color.White else SearchColors.Tile)
+                    .background(if (selected) DefaultThemeColor else SearchColors.Tile)
                     .clickable { onSelect(index) }
                     .padding(horizontal = 16.dp),
                 contentAlignment = Alignment.Center,
@@ -760,7 +671,7 @@ fun SearchCategoryRow(
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Medium,
                     ),
-                    color = if (selected) Color.Black else SearchColors.Primary,
+                    color = if (selected) AzisicBackground else SearchColors.Primary,
                     maxLines = 1,
                 )
             }

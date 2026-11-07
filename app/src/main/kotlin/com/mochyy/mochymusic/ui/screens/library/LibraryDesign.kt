@@ -168,8 +168,8 @@ fun LibraryPinnedTile(
     Box(
         modifier = modifier
             .aspectRatio(1f)
-            .containerTransformSource(key = sharedElementKey, cornerRadius = 18.dp, coverUrl = thumbnailUrl)
-            .clip(RoundedCornerShape(18.dp))
+            .containerTransformSource(key = sharedElementKey, cornerRadius = 8.dp, coverUrl = thumbnailUrl)
+            .clip(RoundedCornerShape(8.dp))
             .background(SearchColors.TileHigh)
             .combinedClickable(
                 interactionSource = remember { MutableInteractionSource() },
@@ -324,7 +324,7 @@ fun LibraryCategoryCard(
     Box(
         modifier = modifier
             .height(78.dp)
-            .clip(RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(8.dp))
             .background(SearchColors.Tile)
             .clickable(onClick = onClick),
     ) {
@@ -378,7 +378,7 @@ fun LibraryWideCard(
                 cornerRadius = 18.dp,
                 coverUrl = covers.firstOrNull { it != null },
             )
-            .clip(RoundedCornerShape(18.dp))
+            .clip(RoundedCornerShape(8.dp))
             .background(SearchColors.Tile)
             .clickable(onClick = onClick),
     ) {

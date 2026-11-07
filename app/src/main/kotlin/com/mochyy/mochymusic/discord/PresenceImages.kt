@@ -34,7 +34,7 @@ object PresenceImages {
     // bump with VERSION in the script: Discord keeps its own copy of each address
     private const val AssetsBase = "https://raw.githubusercontent.com/$GithubOwner/$GithubRepo/main/assets/discord/v1"
 
-    const val LogoUrl = "$AssetsBase/mochy.png"
+    const val LogoUrl = "https://raw.githubusercontent.com/Aziz-coder0/Azisic/main/app/src/main/ic_launcher-playstore.png"
 
     fun statusUrl(status: PresencePicture.Status): String {
         val state = if (status.playing) "playing" else "paused"

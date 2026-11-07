@@ -470,6 +470,7 @@ private fun PlayerSheet(
             },
             onClose = { state.collapseSoft() },
             onSelectTemplate = { selectTemplate(it) },
+            onQueue = { transition.open(PlayerPage.QUEUE) },
         )
     }
 

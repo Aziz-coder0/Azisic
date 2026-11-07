@@ -17,6 +17,7 @@ const val GithubRepo = "Mochy-Music"
 
 const val GithubProfileUrl = "https://github.com/$GithubOwner"
 const val GithubRepoUrl = "https://github.com/$GithubOwner/$GithubRepo"
+const val AzisicRepoUrl = "https://github.com/Aziz-coder0/Azisic"
 const val InstagramUrl = "https://www.instagram.com/furfurrfoxx/"
 // Threads names follow the Instagram one
 const val ThreadsUrl = "https://www.threads.net/@furfurrfoxx"

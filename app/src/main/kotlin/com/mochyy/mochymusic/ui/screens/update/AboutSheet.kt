@@ -22,6 +22,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.mochyy.mochymusic.BuildConfig
 import com.mochyy.mochymusic.R
+import com.mochyy.mochymusic.core.updater.AzisicRepoUrl
 import com.mochyy.mochymusic.core.updater.GithubRepoUrl
 import com.mochyy.mochymusic.ui.component.PopupSheetState
 
@@ -35,9 +36,15 @@ private data class LicenseEntry(
 private val Licenses = listOf(
     LicenseEntry(
         tag = "GPL-3.0",
-        title = "Mochy Music · GNU General Public License v3.0",
+        title = "Azisic · GNU General Public License v3.0",
         subtitle = "Free and open source software, source code on GitHub",
-        url = "$GithubRepoUrl/blob/main/LICENSE",
+        url = "$AzisicRepoUrl/blob/main/LICENSE",
+    ),
+    LicenseEntry(
+        tag = "GPL-3.0",
+        title = "Upstream project notices",
+        subtitle = "Original credits and project information",
+        url = "$GithubRepoUrl#readme",
     ),
     LicenseEntry(
         tag = "GPL-3.0",

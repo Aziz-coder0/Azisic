@@ -2,14 +2,14 @@
   "expo": {
     "name": "Azisic",
     "slug": "azisic",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "icon": "./app/src/main/ic_launcher-playstore.png",
     "platforms": [
       "android"
     ],
     "android": {
       "package": "com.azisic.music.debug",
-      "versionCode": 2
+      "versionCode": 3
     },
     "extra": {
       "eas": {

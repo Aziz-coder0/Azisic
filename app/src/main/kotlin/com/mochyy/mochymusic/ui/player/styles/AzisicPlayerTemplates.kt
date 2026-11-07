@@ -8,7 +8,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -26,6 +25,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
@@ -45,6 +45,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -65,7 +66,6 @@ import com.mochyy.mochymusic.utils.makeTimeString
 private val DeckLine = Color(0xFF503A68)
 private val DeckText = Color(0xFFF6EFFB)
 private val DeckMuted = Color(0xFFCDBFD8)
-private val DeckPanel = RoundedCornerShape(24.dp)
 private val AzisicTemplates = listOf(PlayerStyle.PULSE_DECK, PlayerStyle.NIGHT_SESSION)
 
 @Composable
@@ -77,7 +77,7 @@ internal fun AzisicPlayerTemplate(
 ) {
     val track = rememberStyleTrack()
     val session = style == PlayerStyle.NIGHT_SESSION
-    val tones = rememberStyleTones().copy(chip = AzisicSurfaceRaised, ink = DefaultThemeColor)
+    val tones = rememberStyleTones().copy(chip = Color.Transparent, ink = DeckText)
     val interactive = LocalStyleInteractive.current
     val statusTop = WindowInsets.stableStatusBars.asPaddingValues().calculateTopPadding()
 
@@ -89,7 +89,7 @@ internal fun AzisicPlayerTemplate(
             Box(
                 Modifier.fillMaxSize().background(
                     Brush.verticalGradient(
-                        listOf(if (session) Color(0xFF392448) else Color(0xFF30204C), AzisicBackground)
+                        listOf(if (session) Color(0xFF2C1C39) else Color(0xFF433052), AzisicBackground)
                     )
                 )
             )
@@ -99,7 +99,7 @@ internal fun AzisicPlayerTemplate(
             Modifier.fillMaxSize().navigationBarsPadding().padding(
                 start = 20.dp,
                 end = 20.dp,
-                top = if (landscape) 12.dp else statusTop + 32.dp,
+                top = if (landscape) 8.dp else statusTop + 12.dp,
                 bottom = 14.dp,
             )
         ) {
@@ -112,9 +112,18 @@ internal fun AzisicPlayerTemplate(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
-                    Text("AZISIC / NOW PLAYING", color = DefaultThemeColor, fontSize = 10.sp, letterSpacing = 2.sp, fontWeight = FontWeight.Bold)
-                    TextButton(onClick = actions.onEditPlayer, enabled = canInteract) {
-                        Text("Layouts", color = DeckMuted)
+                    IconButton(onClick = actions.onClose, enabled = canInteract) {
+                        Icon(painterResource(R.drawable.expand_more), stringResource(R.string.close), tint = DeckText)
+                    }
+                    Text(
+                        stringResource(R.string.now_playing),
+                        style = MaterialTheme.typography.titleSmall,
+                        color = DeckText,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                    IconButton(onClick = actions.onOtherMenu, enabled = canInteract) {
+                        Icon(painterResource(R.drawable.more_horiz), stringResource(R.string.more_options), tint = DeckText)
                     }
                 }
             }
@@ -133,7 +142,7 @@ internal fun AzisicPlayerTemplate(
                         BoxWithConstraints(Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
                             DeckArtwork(track.artwork, minOf(maxWidth, maxHeight), session, preview)
                         }
-                        DeckTrackTitle(track, compact = true)
+                        DeckTrackTitle(track, compact = true, interactive = canInteract)
                     }
                     Box(Modifier.weight(1f), contentAlignment = Alignment.Center) { controls() }
                 }
@@ -152,15 +161,14 @@ internal fun AzisicPlayerTemplate(
                         ) {
                             DeckArtwork(track.artwork, sessionCoverSize, true, preview)
                             Column(Modifier.weight(1f)) {
-                                Text("NIGHT SESSION", color = DefaultThemeColor, fontSize = 10.sp, letterSpacing = 2.sp)
-                                DeckTrackTitle(track, compact = true)
+                                DeckTrackTitle(track, compact = true, interactive = canInteract)
                             }
                         }
                     } else {
                         BoxWithConstraints(Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
-                            DeckArtwork(track.artwork, minOf(maxWidth * 0.92f, maxHeight), false, preview)
+                            DeckArtwork(track.artwork, minOf(maxWidth, maxHeight), false, preview)
                         }
-                        DeckTrackTitle(track, compact)
+                        DeckTrackTitle(track, compact, canInteract)
                     }
                     controls()
                 }
@@ -170,28 +178,47 @@ internal fun AzisicPlayerTemplate(
 }
 
 @Composable
-private fun DeckTrackTitle(track: StyleTrack, compact: Boolean) {
-    Column(Modifier.fillMaxWidth().padding(vertical = 6.dp)) {
-        Text(
-            text = track.title.ifBlank { "Choose a track" },
-            color = DeckText,
-            fontSize = if (compact) 22.sp else 29.sp,
-            lineHeight = if (compact) 25.sp else 32.sp,
-            fontWeight = FontWeight.Bold,
-            maxLines = if (compact) 1 else 2,
-            overflow = TextOverflow.Ellipsis,
-        )
-        Text(track.artist, color = DeckMuted, fontSize = 14.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+private fun DeckTrackTitle(track: StyleTrack, compact: Boolean, interactive: Boolean) {
+    Row(
+        Modifier.fillMaxWidth().padding(vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(Modifier.weight(1f)) {
+            Text(
+                text = track.title.ifBlank { stringResource(R.string.azisic_choose_track) },
+                color = DeckText,
+                style = if (compact) MaterialTheme.typography.titleLarge else MaterialTheme.typography.headlineMedium,
+                maxLines = if (compact) 1 else 2,
+                overflow = TextOverflow.Ellipsis,
+            )
+            if (track.artist.isNotBlank()) {
+                Text(
+                    track.artist, color = DeckMuted, style = MaterialTheme.typography.bodyMedium,
+                    maxLines = 1, overflow = TextOverflow.Ellipsis,
+                )
+            }
+        }
+        val connection = LocalPlayerConnection.current
+        if (connection != null) {
+            val current by connection.uiState.trackInfo.collectAsState()
+            IconButton(onClick = connection::toggleLike, enabled = interactive) {
+                Icon(
+                    painterResource(if (current.liked) R.drawable.favorite else R.drawable.favorite_border),
+                    stringResource(if (current.liked) R.string.azisic_unlike_track else R.string.like),
+                    tint = if (current.liked) DefaultThemeColor else DeckText,
+                )
+            }
+        }
     }
 }
 
 @Composable
 private fun DeckArtwork(url: String?, size: Dp, session: Boolean, preview: Boolean) {
     val clock = rememberLivePosition(animated = session && !preview && AppMotion.durationScale.scaleFactor > 0)
-    val shape = if (session) CircleShape else RoundedCornerShape(24.dp)
+    val shape = if (session) CircleShape else RoundedCornerShape(8.dp)
     Box(
-        Modifier.size(size.coerceAtLeast(0.dp)).clip(shape).background(AzisicSurfaceRaised)
-            .border(1.dp, DeckLine, shape),
+        Modifier.size(size.coerceAtLeast(0.dp)).clip(shape)
+            .background(if (session) AzisicBackground else AzisicSurfaceRaised),
         contentAlignment = Alignment.Center,
     ) {
         if (session) {
@@ -216,7 +243,7 @@ private fun DeckArtwork(url: String?, size: Dp, session: Boolean, preview: Boole
                     Icon(painterResource(R.drawable.ic_mochy_mark), null, tint = DefaultThemeColor, modifier = Modifier.size(38.dp))
                 }
             } else {
-                AsyncImage(artwork, "Album artwork", Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
+                AsyncImage(artwork, null, Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
             }
         }
     }
@@ -225,25 +252,37 @@ private fun DeckArtwork(url: String?, size: Dp, session: Boolean, preview: Boole
 @Composable
 private fun DeckControls(style: PlayerStyle, actions: StyleActions, tones: StyleTones, interactive: Boolean) {
     Column(
-        Modifier.fillMaxWidth().clip(DeckPanel).background(AzisicSurface).border(1.dp, DeckLine, DeckPanel)
-            .padding(horizontal = 12.dp, vertical = 4.dp),
+        Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         DeckSeekBar(interactive)
-        TransportCircles(tones = tones, size = 48.dp, spacing = 16.dp)
+        TransportCircles(
+            tones = tones,
+            size = 48.dp,
+            spacing = 18.dp,
+            playTones = tones.copy(chip = DefaultThemeColor, ink = AzisicBackground),
+            playSize = 60.dp,
+        )
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            TextButton(onClick = { actions.onLyrics?.invoke() }, enabled = interactive && actions.onLyrics != null) { Text("Lyrics") }
-            TextButton(onClick = actions.onOtherMenu, enabled = interactive) { Text("More") }
+            TextButton(onClick = { actions.onLyrics?.invoke() }, enabled = interactive && actions.onLyrics != null) {
+                Text(stringResource(R.string.lyrics))
+            }
+            TextButton(onClick = { actions.onQueue?.invoke() }, enabled = interactive && actions.onQueue != null) {
+                Text(stringResource(R.string.queue))
+            }
+            TextButton(onClick = actions.onEditPlayer, enabled = interactive) {
+                Text(stringResource(R.string.azisic_player_layouts))
+            }
         }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(5.dp)) {
             for (template in AzisicTemplates) {
                 val selected = template == style
-                val fill by animateColorAsState(if (selected) DefaultThemeColor else AzisicSurfaceRaised, label = "Template selection")
+                val fill by animateColorAsState(if (selected) AzisicSurfaceRaised else AzisicSurface, label = "Template selection")
                 TextButton(
                     onClick = { actions.onSelectTemplate?.invoke(template) },
                     enabled = interactive && actions.onSelectTemplate != null,
                     modifier = Modifier.weight(1f),
-                    colors = ButtonDefaults.textButtonColors(containerColor = fill, contentColor = if (selected) AzisicBackground else DeckText),
+                    colors = ButtonDefaults.textButtonColors(containerColor = fill, contentColor = if (selected) DefaultThemeColor else DeckMuted),
                 ) {
                     Text(template.displayName, maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 12.sp)
                 }

@@ -185,7 +185,7 @@ fun Modifier.glassRoot(state: GlassState, isActive: () -> Boolean = { true }): M
  * with white icons over a white hairline border, so they are meant to read as dark glass. The
  * shade is the Figma's.
  */
-val GlassChromeColor = Color(0xFF131313)
+val GlassChromeColor = com.mochyy.mochymusic.ui.theme.AzisicSurfaceRaised
 
 /** Backdrop blur for that chrome, heavier than the 24f default so it reads as properly frosted. */
 const val GlassChromeBlurRadius = 48f

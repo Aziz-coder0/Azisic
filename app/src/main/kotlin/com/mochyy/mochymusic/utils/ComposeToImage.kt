@@ -239,7 +239,7 @@ object ComposeToImage {
 
         canvas.drawOval(logoBoxRect, logoBgPaint)
 
-        val rawLogo = context.getDrawable(R.drawable.mochy_icon)?.toBitmap()
+        val rawLogo = context.getDrawable(R.drawable.ic_launcher_mark)?.toBitmap()
         rawLogo?.let {
             val logoPaint = Paint().apply {
 
@@ -533,7 +533,7 @@ object ComposeToImage {
             val contentValues = ContentValues().apply {
                 put(MediaStore.MediaColumns.DISPLAY_NAME, "$fileName.png")
                 put(MediaStore.MediaColumns.MIME_TYPE, "image/png")
-                put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES + "/mochy")
+                put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES + "/Azisic")
             }
             val uri = context.contentResolver.insert(
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI,

@@ -19,10 +19,14 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.drawscope.translate
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.mochyy.mochymusic.R
 import com.mochyy.mochymusic.ui.component.FadeInCover
+import com.mochyy.mochymusic.ui.theme.AzisicBackground
+import com.mochyy.mochymusic.ui.theme.DefaultThemeColor
 import com.mochyy.mochymusic.ui.component.GlassState
 import com.mochyy.mochymusic.ui.utils.resize
 import com.music.innertube.YouTube
@@ -128,11 +132,11 @@ fun WelcomeStep(isHiding: Boolean = false) {
             val center1 = Offset(size.width * 0.2f + (size.width * 0.6f * morphProgress), size.height * 0.3f)
             val center2 = Offset(size.width * 0.8f - (size.width * 0.4f * morphProgress), size.height * 0.7f + (size.height * 0.2f * morphProgress))
 
-            drawRect(Color.Black)
+            drawRect(AzisicBackground)
 
             drawCircle(
                 brush = Brush.radialGradient(
-                    colors = listOf(Color(0xFF0A1F13).copy(alpha = 0.5f), Color.Transparent),
+                    colors = listOf(Color(0xFF503866).copy(alpha = 0.6f), Color.Transparent),
                     center = center1,
                     radius = size.width * 0.7f
                 ),
@@ -142,7 +146,7 @@ fun WelcomeStep(isHiding: Boolean = false) {
 
             drawCircle(
                 brush = Brush.radialGradient(
-                    colors = listOf(Color(0xFF07170E).copy(alpha = 0.4f), Color.Transparent),
+                    colors = listOf(DefaultThemeColor.copy(alpha = 0.12f), Color.Transparent),
                     center = center2,
                     radius = size.width * 0.8f
                 ),
@@ -173,9 +177,9 @@ fun WelcomeStep(isHiding: Boolean = false) {
                 .background(
                     Brush.verticalGradient(
                         0f to Color.Transparent,
-                        0.4f to Color(0xFF121212).copy(alpha = 0.8f),
-                        0.8f to Color(0xFF121212),
-                        1f to Color(0xFF121212)
+                        0.4f to AzisicBackground.copy(alpha = 0.8f),
+                        0.8f to AzisicBackground,
+                        1f to AzisicBackground
                     )
                 )
         )
@@ -186,7 +190,7 @@ fun WelcomeStep(isHiding: Boolean = false) {
                 .padding(start = 32.dp, bottom = 175.dp, end = 32.dp)
         ) {
             Text(
-                text = "Welcome to\nAzisic!",
+                text = stringResource(R.string.app_name),
                 fontSize = 42.sp,
                 lineHeight = 44.sp,
                 fontWeight = FontWeight.ExtraBold,
@@ -195,7 +199,7 @@ fun WelcomeStep(isHiding: Boolean = false) {
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "A way to listen and own your\nmusic, differently.",
+                text = stringResource(R.string.azisic_welcome_description),
                 fontSize = 16.sp,
                 color = Color(0xFFB3B3B3),
                 lineHeight = 22.sp,

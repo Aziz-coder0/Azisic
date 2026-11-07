@@ -217,7 +217,7 @@ private object MochyGreeting {
 /** Where the header is in its pull-down / scratch / recap life. */
 private enum class HeaderStage { Collapsed, Pulling, Expanding, Expanded, Scanning, Invalid, Story }
 
-private val PageCard = Color(0xFF0F0F0F)
+private val PageCard = com.mochyy.mochymusic.ui.theme.AzisicSurface
 
 @Composable
 fun ProfileScreen(navController: NavController) {
@@ -419,11 +419,12 @@ fun ProfileScreen(navController: NavController) {
     val glassState = remember { GlassState() }
 
     // the Mochy page, and over it the profile page when the card has been tapped
-    Box(modifier = Modifier.fillMaxSize().background(Color.Black)) {
+    val pageColor = MaterialTheme.colorScheme.background
+    Box(modifier = Modifier.fillMaxSize().background(pageColor)) {
         BoxWithConstraints(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.Black)
+                .background(pageColor)
                 .onGloballyPositioned { rootOnScreen = it.positionOnScreen() }
                 .pointerInput(Unit) {
                     // a new touch is "in the header" only if the header itself says so (it sees it next)
@@ -1064,7 +1065,7 @@ private fun VersionCapsule(update: Boolean, onAbout: () -> Unit) {
 @Composable
 private fun DeveloperCard(onClick: () -> Unit) {
     Row(
-        modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(22.dp)).background(PageCard)
+        modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp)).background(PageCard)
             .clickable(onClick = onClick).padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {

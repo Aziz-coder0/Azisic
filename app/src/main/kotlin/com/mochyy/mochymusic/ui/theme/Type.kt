@@ -32,56 +32,56 @@ object LookFont {
 // read through a state, so text set in it follows a look's font turning on or off
 val InterFontFamily: FontFamily get() = LookFont.family ?: Inter
 
-private val GlobalFontWeight = FontWeight.SemiBold
-private val GlobalLetterSpacing = (-0.05).em
+private val GlobalFontWeight = FontWeight.Medium
+private val GlobalLetterSpacing = (-0.018).em
 
 /** the app's text styles in [font], rebuilt when a look's font comes or goes */
 fun appTypography(font: FontFamily) = Typography(
     displayLarge = TextStyle(
         fontFamily = font,
-        fontWeight = GlobalFontWeight,
+        fontWeight = FontWeight.Bold,
         fontSize = 57.sp,
         lineHeight = 64.sp,
         letterSpacing = GlobalLetterSpacing
     ),
     displayMedium = TextStyle(
         fontFamily = font,
-        fontWeight = GlobalFontWeight,
+        fontWeight = FontWeight.Bold,
         fontSize = 45.sp,
         lineHeight = 52.sp,
         letterSpacing = GlobalLetterSpacing
     ),
     displaySmall = TextStyle(
         fontFamily = font,
-        fontWeight = GlobalFontWeight,
+        fontWeight = FontWeight.Bold,
         fontSize = 36.sp,
         lineHeight = 44.sp,
         letterSpacing = GlobalLetterSpacing
     ),
     headlineLarge = TextStyle(
         fontFamily = font,
-        fontWeight = GlobalFontWeight,
+        fontWeight = FontWeight.Bold,
         fontSize = 32.sp,
         lineHeight = 40.sp,
         letterSpacing = GlobalLetterSpacing
     ),
     headlineMedium = TextStyle(
         fontFamily = font,
-        fontWeight = GlobalFontWeight,
+        fontWeight = FontWeight.Bold,
         fontSize = 28.sp,
         lineHeight = 36.sp,
         letterSpacing = GlobalLetterSpacing
     ),
     headlineSmall = TextStyle(
         fontFamily = font,
-        fontWeight = GlobalFontWeight,
+        fontWeight = FontWeight.Bold,
         fontSize = 24.sp,
         lineHeight = 32.sp,
         letterSpacing = GlobalLetterSpacing
     ),
     titleLarge = TextStyle(
         fontFamily = font,
-        fontWeight = GlobalFontWeight,
+        fontWeight = FontWeight.Bold,
         fontSize = 22.sp,
         lineHeight = 28.sp,
         letterSpacing = GlobalLetterSpacing

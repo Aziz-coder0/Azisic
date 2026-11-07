@@ -30,6 +30,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -62,6 +63,7 @@ import com.mochyy.mochymusic.ui.component.GlassState
 import com.mochyy.mochymusic.ui.component.SettingsHighlight
 import com.mochyy.mochymusic.ui.component.glassRoot
 import com.mochyy.mochymusic.ui.screens.search.SearchAvatar
+import com.mochyy.mochymusic.ui.screens.search.SearchColors
 import com.mochyy.mochymusic.ui.screens.search.SearchField
 import com.mochyy.mochymusic.ui.screens.search.SearchGlassTopBar
 import com.mochyy.mochymusic.ui.screens.search.rememberScrollCollapseProgress
@@ -148,7 +150,7 @@ private val SettingsIndex = listOf(
     SettingsEntry("Cover rounding", "Customisation", "customisation_settings", "square rounded corner radius px thumbnail art"),
     SettingsEntry("Playlist styles", "Customisation", "customisation_settings", "flow classic minimal header layout"),
     SettingsEntry("Player styles", "Customisation", "customisation_settings", "flagship turntable ipod poster timeline lyrics studio customize player cover"),
-    SettingsEntry("Home styles", "Customisation", "customisation_settings", "mochyy listen now hop in hero layout grid"),
+    SettingsEntry("Home styles", "Customisation", "customisation_settings", "azisic classic listen now hop in hero layout grid"),
     SettingsEntry("Blur", "Customisation", "customisation_settings", "blur glass frosted performance lag"),
     SettingsEntry("Progressive blur", "Customisation", "customisation_settings", "gradient fade top bar hairline flat"),
     SettingsEntry("Blur quality", "Customisation", "customisation_settings", "low high glass performance"),
@@ -275,17 +277,18 @@ private val RecommendedOptions = listOf(
     )
 )
 
-private val BubbleColor = Color(0xFF1C1C1E)
-private val SelectedBubbleColor = Color(0xFF3A3A3E)
+private val BubbleColor = SearchColors.Tile
+private val SelectedBubbleColor = SearchColors.FieldFocused
 
 // the header holds the mochy mark with the big "Settings" under it, taller than search's title-only header
-private val SettingsTitleBlockHeight = 88.dp
-private val SettingsMarkSize = 32.dp
-private val IconBgColor = Color(0xFF333338)
+private val SettingsTitleBlockHeight = 62.dp
+private val SettingsMarkSize = 28.dp
+private val IconBgColor = SearchColors.TileHigh
 
 @Composable
 fun MochySettingsScreen(navController: NavController, pane: SettingsPane? = null) {
     val focusManager = LocalFocusManager.current
+    val (pureBlack) = rememberPreference(com.mochyy.mochymusic.constants.PureBlackKey, defaultValue = false)
     // on a wide screen the list stays put and its pages open beside it
     val open: (String) -> Unit = { route ->
         if (pane != null) navController.openSettingsPage(route) else navController.navigate(route)
@@ -341,7 +344,7 @@ fun MochySettingsScreen(navController: NavController, pane: SettingsPane? = null
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black),
+            .background(SearchColors.page(pureBlack)),
     ) {
         Box(
             modifier = Modifier
@@ -579,15 +582,18 @@ fun MochySettingsScreen(navController: NavController, pane: SettingsPane? = null
         SearchGlassTopBar(
             glassState = glassState,
             progressProvider = { collapseProgress },
-            pureBlack = true,
+            pureBlack = pureBlack,
             title = stringResource(R.string.settings),
             titleBlockHeight = SettingsTitleBlockHeight,
             titleContent = {
-                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
                     Icon(
                         painter = painterResource(R.drawable.ic_mochy_mark),
-                        contentDescription = "Azisic",
-                        tint = Color.White,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(SettingsMarkSize),
                     )
                     Text(
@@ -654,8 +660,8 @@ internal fun CategoryBubble(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(64.dp)
-            .clip(RoundedCornerShape(22.dp))
+            .height(56.dp)
+            .clip(RoundedCornerShape(8.dp))
             .background(if (selected) SelectedBubbleColor else BubbleColor)
             .clickable(onClick = onClick)
             .padding(horizontal = 16.dp),
@@ -667,8 +673,8 @@ internal fun CategoryBubble(
         ) {
             Box(
                 modifier = Modifier
-                    .size(40.dp)
-                    .clip(CircleShape)
+                    .size(36.dp)
+                    .clip(RoundedCornerShape(6.dp))
                     .background(IconBgColor),
                 contentAlignment = Alignment.Center
             ) {

@@ -374,7 +374,14 @@ private const val CircleSkipWidth = 0.46f
 
 /** previous, play/pause and next as three [StyleCircle]s, laid out by the caller's [Row] or [Column] */
 @Composable
-fun TransportCircles(tones: StyleTones, size: Dp = 30.dp, vertical: Boolean = false, spacing: Dp = 8.dp) {
+fun TransportCircles(
+    tones: StyleTones,
+    size: Dp = 30.dp,
+    vertical: Boolean = false,
+    spacing: Dp = 8.dp,
+    playTones: StyleTones = tones,
+    playSize: Dp = size,
+) {
     val connection = LocalPlayerConnection.current ?: return
     val transport by connection.uiState.transportState.collectAsState()
     val scope = rememberCoroutineScope()
@@ -393,9 +400,9 @@ fun TransportCircles(tones: StyleTones, size: Dp = 30.dp, vertical: Boolean = fa
             glyph = { tint -> AnimatedSkipGlyph(cycle = previous, backwards = true, color = tint, width = size * CircleSkipWidth) },
         )
         StyleCircle(
-            tones = tones,
-            size = size,
-            glyph = { tint -> AnimatedPlayGlyph(playing = transport.isPlaying, color = tint, height = size * CirclePlayHeight) },
+            tones = playTones,
+            size = playSize,
+            glyph = { tint -> AnimatedPlayGlyph(playing = transport.isPlaying, color = tint, height = playSize * CirclePlayHeight) },
             onClick = {
                 if (transport.playbackState == Player.STATE_ENDED) {
                     connection.player.seekTo(0, 0)
@@ -417,9 +424,9 @@ fun TransportCircles(tones: StyleTones, size: Dp = 30.dp, vertical: Boolean = fa
         )
     }
     if (vertical) {
-        Column(verticalArrangement = Arrangement.spacedBy(spacing)) { content() }
+        Column(verticalArrangement = Arrangement.spacedBy(spacing), horizontalAlignment = Alignment.CenterHorizontally) { content() }
     } else {
-        Row(horizontalArrangement = Arrangement.spacedBy(spacing)) { content() }
+        Row(horizontalArrangement = Arrangement.spacedBy(spacing), verticalAlignment = Alignment.CenterVertically) { content() }
     }
 }
 
@@ -440,6 +447,7 @@ class StyleActions(
     // folds the player down to the mini player, for a module's close button
     val onClose: () -> Unit = {},
     val onSelectTemplate: ((com.mochyy.mochymusic.constants.PlayerStyle) -> Unit)? = null,
+    val onQueue: (() -> Unit)? = null,
 )
 
 /**

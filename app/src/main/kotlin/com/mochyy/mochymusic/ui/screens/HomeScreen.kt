@@ -131,6 +131,7 @@ import com.mochyy.mochymusic.playback.queues.ListQueue
 import com.mochyy.mochymusic.playback.queues.YouTubeQueue
 import com.mochyy.mochymusic.R
 import com.mochyy.mochymusic.ui.component.ArtistListCard
+import com.mochyy.mochymusic.ui.component.Bone
 import com.mochyy.mochymusic.ui.component.BonesHost
 import com.mochyy.mochymusic.ui.component.coverTintBackground
 import com.mochyy.mochymusic.ui.component.HeroCarousel
@@ -497,9 +498,32 @@ private fun HomeShell() {
         .takeIf { it.isNotBlank() }
         ?.let { if (it.contains("://")) it else "file://$it" }
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    val background = if (homeStyle == HomeStyle.AZISIC) MaterialTheme.colorScheme.background else Color.Black
+    Box(modifier = Modifier.fillMaxSize().background(background)) {
         Column(modifier = Modifier.fillMaxSize()) {
-            if (homeStyle == HomeStyle.MOCHYY) {
+            if (homeStyle == HomeStyle.AZISIC) {
+                Spacer(Modifier.height(WindowInsets.stableSystemBars.asPaddingValues().calculateTopPadding() + 76.dp))
+                BonesHost(modifier = Modifier.launchRise(order = 1)) {
+                    Column(
+                        Modifier.padding(horizontal = HomeContentInset),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        repeat(2) {
+                            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                repeat(2) {
+                                    Bone(
+                                        width = 150.dp,
+                                        height = 56.dp,
+                                        shape = RoundedCornerShape(8.dp),
+                                        modifier = Modifier.weight(1f),
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+                Spacer(Modifier.height(24.dp))
+            } else if (homeStyle == HomeStyle.MOCHYY) {
                 HeroCarouselBones(modifier = Modifier.launchRise(order = 1))
             } else {
                 Spacer(Modifier.height(WindowInsets.stableSystemBars.asPaddingValues().calculateTopPadding() + 82.dp))
@@ -1295,12 +1319,9 @@ fun HomeScreen(
             }
 
             val homeGlassState = remember { GlassState() }
+            val backgroundColor = if (homeStyle == HomeStyle.AZISIC) MaterialTheme.colorScheme.background else Color.Black
 
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-            ) {
-                val backgroundColor = Color.Black
+            Box(modifier = Modifier.fillMaxSize().background(backgroundColor)) {
                 CompositionLocalProvider(
                     com.mochyy.mochymusic.ui.component.LocalGridItemPadding provides 0.dp
                 ) {
@@ -1318,11 +1339,12 @@ fun HomeScreen(
                     HomeStyle.AZISIC -> {
                         item(key = "azisic_home", contentType = "hero") {
                             AzisicHomeHeader(
-                                trackTitle = mediaMetadataState.value?.title,
-                                onPlayCurrent = { playerBottomSheetState?.expandSoft() },
+                                track = mediaMetadataState.value,
+                                onOpenPlayer = { playerBottomSheetState?.expandSoft() },
                                 onSearch = { navController.navigateToTab(Screens.Search.route) },
                                 onLiked = { navController.navigate("auto_playlist/liked") },
                                 onHistory = { navController.navigate("history") },
+                                onLibrary = { navController.navigateToTab(Screens.Library.route) },
                                 modifier = Modifier
                                     .padding(
                                         start = HomeContentInset,
@@ -1783,16 +1805,16 @@ fun HomeScreen(
                         modifier = Modifier
                             .matchParentSize()
                             .drawWithCache {
-                                // every stop is black, so the fade is built once and only its alpha follows the scroll
+                                // Build the fade once and update its alpha as the page scrolls.
                                 val fade = if (progressiveBar) {
                                     Brush.verticalGradient(
-                                        0f to Color.Black.copy(alpha = 0.9f),
-                                        0.3f to Color.Black.copy(alpha = 0.6f),
-                                        0.6f to Color.Black.copy(alpha = 0.3f),
+                                        0f to backgroundColor.copy(alpha = 0.98f),
+                                        0.3f to backgroundColor.copy(alpha = 0.75f),
+                                        0.6f to backgroundColor.copy(alpha = 0.36f),
                                         1f to Color.Transparent
                                     )
                                 } else {
-                                    androidx.compose.ui.graphics.SolidColor(Color.Black.copy(alpha = com.mochyy.mochymusic.ui.component.FlatBarScrimAlpha))
+                                    androidx.compose.ui.graphics.SolidColor(backgroundColor.copy(alpha = com.mochyy.mochymusic.ui.component.FlatBarScrimAlpha))
                                 }
                                 onDrawBehind {
                                     drawRect(brush = fade, alpha = heroScrollProgressProvider().coerceIn(0f, 1f))
