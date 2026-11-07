@@ -4,15 +4,13 @@
 
 Azisic is an Android music player based on Mochy Music, customized and maintained by **Abdul Agantal Omar**.
 
-## Download
+## Android preview
 
-Open this repository’s **Releases** page, select **v1.1.0**, and download **Azisic-v1.1.0-preview.apk** from Assets. Open the APK on Android to install it.
+Get the **Azisic v1.3.0** APK from the [Expo EAS build page](https://expo.dev/accounts/abdulomar120/projects/azisic/builds/6d1193e6-b73a-40da-b803-491c6f54a652). The [corresponding v1.3.0 source and build files](https://github.com/Aziz-coder0/Azisic/tree/a45358eac975c30b5a9a2256a06e225eb47ae43a) are available under [GPL-3.0](LICENSE).
 
-If you installed the v1.0.0 Azisic preview, export your data from **Settings → Storage → Export user data** before uninstalling that preview. v1.1.0 uses a different signing key. Install v1.1.0, then import the backup in Azisic.
+If Android requires you to uninstall an older preview before installing this build, first back up your library and settings via **Settings → Storage → Export user data**. Import that backup after installing v1.3.0.
 
 ## What’s inside
-
-The v1.3.0 source includes the expanded interface redesign. The download instructions above are for the v1.1.0 preview.
 
 - **Home** features the current song or a recent track, with one-tap playback and shortcuts to your library.
 - **Search and Library** use artwork-led browsing. If Search cannot load genres, it offers Retry and a route to downloaded songs.
@@ -23,7 +21,7 @@ The v1.3.0 source includes the expanded interface redesign. The download instruc
 
 ## Preview status
 
-The v1.1.0 APK installed and showed the welcome screen in an Android emulator. A music service timeout in that emulator prevented completion of the Home and playback checks.
+The v1.3.0 Android build completed on Expo EAS. On-device playback testing is pending.
 
 ## Build locally
 
