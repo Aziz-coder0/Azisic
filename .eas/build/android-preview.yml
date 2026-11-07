@@ -1,0 +1,37 @@
+build:
+  name: Build Azisic Android preview
+  steps:
+    - eas/checkout
+    - run:
+        name: Compile native Android APK
+        command: |
+          set -euo pipefail
+
+          if [ -x /usr/lib/jvm/java-21-openjdk-amd64/bin/javac ]; then
+            export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
+          else
+            export JAVA_HOME="$(mktemp -d)"
+            curl -fsSL --retry 3 https://api.adoptium.net/v3/binary/latest/21/ga/linux/x64/jdk/hotspot/normal/eclipse |
+              tar -xz --strip-components=1 -C "$JAVA_HOME"
+          fi
+          export PATH="$JAVA_HOME/bin:$PATH"
+
+          sdkmanager --install 'platforms;android-36' 'build-tools;36.0.0' 'ndk;27.0.12077973' 'cmake;3.22.1'
+
+          if [ -n "${AZISIC_PREVIEW_KEYSTORE:-}" ]; then
+            mkdir -p "$HOME/.android"
+            install -m 600 "$AZISIC_PREVIEW_KEYSTORE" "$HOME/.android/debug.keystore"
+          elif [ ! -f "$HOME/.android/debug.keystore" ]; then
+            mkdir -p "$HOME/.android"
+            keytool -genkeypair -keystore "$HOME/.android/debug.keystore" \
+              -storepass android -keypass android -alias androiddebugkey \
+              -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
+          fi
+
+          chmod +x gradlew
+          ./gradlew :app:assembleUniversalFossDebug --no-configuration-cache --console=plain
+          cp app/build/outputs/apk/universalFoss/debug/*.apk Azisic-preview.apk
+    - eas/upload_artifact:
+        name: Upload Azisic APK
+        inputs:
+          path: Azisic-preview.apk
