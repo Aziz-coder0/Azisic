@@ -69,9 +69,9 @@ import kotlin.math.roundToInt
 import com.mochyy.mochymusic.ui.utils.stableStatusBars
 
 /** the backdrop behind the sheet, and the sheet itself */
-private val PageBackdrop = Color(0xFF141416)
-private val SheetColor = Color.Black
-private val SheetCorner = 40.dp
+private val PageBackdrop = Color(0xFF251B2C)
+private val SheetColor = Color(0xFF15101B)
+private val SheetCorner = 16.dp
 
 /** past this the sheet's content stops widening, so a tablet reads like a wide phone */
 private val ContentMaxWidth = 680.dp
@@ -110,7 +110,7 @@ fun AudioLabPage(
         modifier = modifier
             .fillMaxSize()
             // what shows round the backdrop's edges as it shrinks back
-            .background(Color.Black),
+            .background(SheetColor),
     ) {
         val wide = maxWidth > ContentMaxWidth + SideMargin * 2
         // on a tablet the title lines up with the sheet's content, not the screen's edge

@@ -67,7 +67,11 @@ fun StorageScreen(navController: NavController, viewModel: StorageViewModel = hi
     LaunchedEffect(downloads?.size) { viewModel.measure() }
 
     SubSettingsScaffold(title = stringResource(R.string.storage), onBack = { navController.navigateUp() }) {
-        // one overall card per drive mochy keeps things on, the phone first
+        BreakdownCard(usage)
+        Spacer(Modifier.height(22.dp))
+        TransferSection()
+        Spacer(Modifier.height(24.dp))
+
         val drives = usage?.drives
         if (drives == null) {
             OverallCard(null)
@@ -77,10 +81,7 @@ fun StorageScreen(navController: NavController, viewModel: StorageViewModel = hi
 
         Spacer(Modifier.height(22.dp))
         SectionText(usage?.let { headline(it) } ?: stringResource(R.string.storage_measuring))
-        Spacer(Modifier.height(14.dp))
-        BreakdownCard(usage)
-
-        Spacer(Modifier.height(26.dp))
+        Spacer(Modifier.height(24.dp))
         SectionText(stringResource(R.string.storage_junk_title))
         usage?.let { SmartHint(it, downloadCount = downloads?.size ?: 0) }
         Spacer(Modifier.height(14.dp))
@@ -97,8 +98,6 @@ fun StorageScreen(navController: NavController, viewModel: StorageViewModel = hi
         Spacer(Modifier.height(14.dp))
         PlaceButtons(viewModel, downloadCount = downloads?.size ?: 0)
 
-        Spacer(Modifier.height(26.dp))
-        TransferSection()
     }
 }
 
@@ -136,14 +135,14 @@ private fun OverallCard(drive: DriveUsage?) {
         Spacer(Modifier.height(14.dp))
         UsageBar(
             parts = listOf(
-                BarPart(MochyGreen, drive?.mochy ?: 0),
+                BarPart(StorageAccent, drive?.mochy ?: 0),
                 BarPart(OthersGrey, drive?.othersUsed ?: 0),
             ),
             total = drive?.total ?: 0,
         )
         Spacer(Modifier.height(14.dp))
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-            LegendSwatch(MochyGreen)
+            LegendSwatch(StorageAccent)
             Spacer(Modifier.width(8.dp))
             Text(stringResource(R.string.storage_legend_mochy), style = storageText(16f, FontWeight.SemiBold))
             Spacer(Modifier.width(16.dp))
@@ -160,12 +159,16 @@ private fun OverallCard(drive: DriveUsage?) {
 @Composable
 private fun BreakdownCard(usage: StorageUsage?) {
     StorageCardColumn {
-        Text(stringResource(R.string.storage_breakdown_title), style = storageText(17f))
+        Text(stringResource(R.string.storage_breakdown_title), style = storageText(14f, color = StorageMuted))
+        if (usage != null) {
+            Spacer(Modifier.height(5.dp))
+            Text(stringResource(R.string.azisic_storage_used, formatSize(usage.mochy)), style = storageText(25f))
+        }
         Spacer(Modifier.height(14.dp))
         UsageBar(
             parts = listOf(
-                BarPart(CacheOrange, usage?.cache ?: 0),
-                BarPart(MochyGreen, usage?.downloads ?: 0),
+                BarPart(StorageCache, usage?.cache ?: 0),
+                BarPart(StorageAccent, usage?.downloads ?: 0),
                 BarPart(DatabaseRed, usage?.database ?: 0),
                 BarPart(AppDataBlue, usage?.appData ?: 0),
             ),
@@ -173,8 +176,8 @@ private fun BreakdownCard(usage: StorageUsage?) {
         )
         Spacer(Modifier.height(16.dp))
         Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            LegendRow(CacheOrange, stringResource(R.string.storage_legend_cache), usage?.let { formatSize(it.cache) })
-            LegendRow(MochyGreen, stringResource(R.string.storage_legend_downloads), usage?.let { formatSize(it.downloads) })
+            LegendRow(StorageCache, stringResource(R.string.storage_legend_cache), usage?.let { formatSize(it.cache) })
+            LegendRow(StorageAccent, stringResource(R.string.storage_legend_downloads), usage?.let { formatSize(it.downloads) })
             LegendRow(DatabaseRed, stringResource(R.string.storage_legend_database), usage?.let { formatSize(it.database) })
             LegendRow(AppDataBlue, stringResource(R.string.storage_legend_app_data), usage?.let { formatSize(it.appData) })
         }

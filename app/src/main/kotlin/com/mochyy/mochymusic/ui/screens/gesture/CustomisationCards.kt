@@ -379,7 +379,7 @@ fun PlayerStyleCard(
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
         StyleCard(
-            category = stringResource(R.string.customise_player_styles),
+            category = stringResource(R.string.azisic_current_style),
             title = selected.displayName,
             highlighted = false,
             onClick = onOpenEditor,

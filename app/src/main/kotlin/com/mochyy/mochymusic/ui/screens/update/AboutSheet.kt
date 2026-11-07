@@ -105,7 +105,7 @@ private fun AboutSheetContent(onLicenses: () -> Unit) {
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-            Icon(painterResource(R.drawable.ic_mochy_mark), null, tint = MaterialTheme.colorScheme.primary)
+            Icon(painterResource(R.drawable.ic_azisic_signal), null, tint = MaterialTheme.colorScheme.primary)
             Column {
                 Text(stringResource(R.string.app_name), style = MaterialTheme.typography.headlineLarge)
                 Text("Version ${BuildConfig.VERSION_NAME}", color = MaterialTheme.colorScheme.onSurfaceVariant)

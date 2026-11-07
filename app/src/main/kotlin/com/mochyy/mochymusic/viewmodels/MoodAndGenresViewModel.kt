@@ -11,7 +11,9 @@ import com.music.innertube.pages.MoodAndGenres
 import com.mochyy.mochymusic.utils.reportException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
@@ -28,21 +30,30 @@ fun coverKey(browseId: String, params: String?): String = "$browseId|${params.or
 class MoodAndGenresViewModel
 @Inject
 constructor() : ViewModel() {
-    val moodAndGenres = MutableStateFlow<List<MoodAndGenres>?>(null)
+    private val _moodAndGenres = MutableStateFlow<List<MoodAndGenres>?>(null)
+    val moodAndGenres = _moodAndGenres.asStateFlow()
+
+    private val _loadFailed = MutableStateFlow(false)
+    val loadFailed = _loadFailed.asStateFlow()
+    private var loadJob: Job? = null
 
     val covers = MoodCoverCache.covers
 
     private val gate = Semaphore(3)
 
     init {
-        // on io: the page is parsed where it's read, and on the main thread that hitched the search tab opening
-        viewModelScope.launch(Dispatchers.IO) {
-            YouTube
-                .moodAndGenres()
-                .onSuccess {
-                    moodAndGenres.value = it
-                }.onFailure {
+        loadGenres()
+    }
+
+    fun loadGenres() {
+        if (loadJob?.isActive == true) return
+        _loadFailed.value = false
+        loadJob = viewModelScope.launch(Dispatchers.IO) {
+            YouTube.moodAndGenres()
+                .onSuccess { _moodAndGenres.value = it }
+                .onFailure {
                     reportException(it)
+                    _loadFailed.value = true
                 }
         }
     }

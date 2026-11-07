@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -600,25 +601,14 @@ fun MoodTile(
     val tileColor = remember(stripeColor) { blendOver(moodTint(stripeColor).copy(alpha = 0.48f), AzisicSurface) }
     val cover = covers.firstOrNull { !it.isNullOrBlank() }
 
-    Box(
+    Row(
         modifier = modifier
-            .height(96.dp)
+            .height(94.dp)
             .clip(RoundedCornerShape(8.dp))
             .background(tileColor)
             .clickable(role = Role.Button, onClick = onClick),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-        if (cover != null) {
-            AsyncImage(
-                model = cover.resize(192, 192),
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.align(Alignment.BottomEnd)
-                    .offset(x = 8.dp, y = 14.dp)
-                    .size(60.dp)
-                    .graphicsLayer { rotationZ = 19f }
-                    .clip(RoundedCornerShape(4.dp)),
-            )
-        }
         Text(
             text = title,
             style = MaterialTheme.typography.titleMedium,
@@ -626,9 +616,16 @@ fun MoodTile(
             color = if (tileColor.luminance() > 0.18f) Color.Black else SearchColors.Primary,
             maxLines = 3,
             overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.align(Alignment.TopStart)
-                .padding(start = 12.dp, top = 10.dp, end = if (cover == null) 12.dp else 54.dp),
+            modifier = Modifier.weight(1f).padding(horizontal = 10.dp, vertical = 8.dp),
         )
+        if (cover != null) {
+            AsyncImage(
+                model = cover.resize(192, 192),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.weight(0.52f).fillMaxHeight(),
+            )
+        }
     }
 }
 

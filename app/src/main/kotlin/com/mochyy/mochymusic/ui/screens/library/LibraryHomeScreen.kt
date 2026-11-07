@@ -27,6 +27,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
@@ -116,7 +120,7 @@ fun LibraryHomeScreen(
 
     Box(modifier = modifier.fillMaxSize()) {
         LibraryScaffold(
-            title = stringResource(R.string.filter_library),
+            title = stringResource(R.string.your_library),
             subtitle = null,
             searchPlaceholder = when (tab) {
                 LibraryTab.Local -> stringResource(R.string.library_local_search)
@@ -288,6 +292,30 @@ private fun LazyListScope.libraryAllTab(
         Spacer(modifier = Modifier.height(16.dp))
     }
 
+    if (likedSongs.isNotEmpty()) {
+        item(key = "liked_songs") {
+            LibraryWideCard(
+                title = stringResource(R.string.liked),
+                count = likedSongs.size,
+                covers = likedSongs.take(4).map { it.song.thumbnailUrl },
+                onClick = { navController.navigate("auto_playlist/liked") },
+                sharedElementKey = "playlist-liked",
+                art = { LikedCover(it) },
+                modifier = Modifier.padding(horizontal = SearchHorizontalPadding),
+            )
+        }
+    }
+
+    item(key = "downloads_link") {
+        TextButton(
+            onClick = { navController.navigate("auto_playlist/downloaded") },
+            modifier = Modifier.padding(horizontal = SearchHorizontalPadding),
+        ) {
+            Icon(painterResource(R.drawable.download), contentDescription = null)
+            Text(stringResource(R.string.azisic_open_downloads), modifier = Modifier.padding(start = 8.dp))
+        }
+    }
+
     // A completely empty library gets one honest message instead of four zero-count cards.
     if (songs.isEmpty() && albums == 0 && artists == 0 && playlists == 0 && pinnedItems.isEmpty()) {
         item(key = "empty") { LibraryEmptyState(text = stringResource(R.string.library_empty_import)) }
@@ -359,19 +387,7 @@ private fun LazyListScope.libraryAllTab(
         }
     }
 
-    if (likedSongs.isNotEmpty()) {
-        item(key = "liked_songs") {
-            LibraryWideCard(
-                title = stringResource(R.string.liked),
-                count = likedSongs.size,
-                covers = likedSongs.take(4).map { it.song.thumbnailUrl },
-                onClick = { navController.navigate("auto_playlist/liked") },
-                sharedElementKey = "playlist-liked",
-                art = { LikedCover(it) },
-                modifier = Modifier.padding(horizontal = SearchHorizontalPadding),
-            )
-        }
-    }
+
 }
 
 /**

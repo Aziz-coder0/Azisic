@@ -108,7 +108,8 @@ fun SubSettingsScaffold(
     val scrollState = rememberScrollState()
     val glassState = remember { GlassState() }
 
-    val headerFoundationColor = Color.Black
+    val colors = MaterialTheme.colorScheme
+    val headerFoundationColor = colors.background
 
     // Latch-and-settle collapse, same as Library/Search: once the threshold is crossed the morph
     // always finishes smoothly, even after the user's finger lifts mid-scroll.
@@ -145,7 +146,7 @@ fun SubSettingsScaffold(
         snapshotFlow { collapse.value < 0.5f }.collect { opened -> if (opened) searchOverlayVisible = false }
     }
 
-    Box(modifier = modifier.fillMaxSize()) {
+    Box(modifier = modifier.fillMaxSize().background(headerFoundationColor)) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -191,13 +192,13 @@ fun SubSettingsScaffold(
                     .drawWithCache {
                         val gradient = if (progressive) {
                             Brush.verticalGradient(
-                                0f to Color.Black.copy(alpha = 0.90f),
-                                0.20f to Color.Black.copy(alpha = 0.50f),
-                                0.45f to Color.Black.copy(alpha = 0.18f),
+                                0f to headerFoundationColor.copy(alpha = 0.90f),
+                                0.20f to headerFoundationColor.copy(alpha = 0.50f),
+                                0.45f to headerFoundationColor.copy(alpha = 0.18f),
                                 0.75f to Color.Transparent,
                             )
                         } else {
-                            SolidColor(Color.Black.copy(alpha = FlatBarScrimAlpha))
+                            SolidColor(headerFoundationColor.copy(alpha = FlatBarScrimAlpha))
                         }
                         onDrawBehind { drawRect(brush = gradient) }
                     }
@@ -215,8 +216,8 @@ fun SubSettingsScaffold(
                 modifier = Modifier
                     .padding(top = HeaderTopPadding)
                     .size(BackButtonSize)
-                    .clip(CircleShape)
-                    .background(Color(0xFF2C2C2E))
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(colors.surfaceContainerHigh)
                     .clickable(onClick = onBack),
                 contentAlignment = Alignment.Center
             ) {

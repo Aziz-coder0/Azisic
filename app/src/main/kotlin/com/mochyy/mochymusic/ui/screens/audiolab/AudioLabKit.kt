@@ -82,14 +82,14 @@ import kotlinx.coroutines.flow.first
 import com.mochyy.mochymusic.ui.component.RemoteFocus
 
 object LabColors {
-    val Card = Color(0xFF1C1C1E)
-    val Stage = Color(0xFF0E0E10)
-    val StageLine = Color(0xFF2E2E32)
-    val Row = Color(0xFF26262A)
-    val RowSelected = Color(0xFF34343A)
-    val Chip = Color(0xFF232327)
+    val Card = Color(0xFF241B2B)
+    val Stage = Color(0xFF16111B)
+    val StageLine = Color(0xFF40344A)
+    val Row = Color(0xFF2E2336)
+    val RowSelected = Color(0xFF41324B)
+    val Chip = Color(0xFF2E2336)
     val Primary = Color.White
-    val Secondary = Color(0xFF9A9AA0)
+    val Secondary = Color(0xFFC4B7CE)
     val Faint = Color(0xFF5C5C63)
     val Ink = Color(0xFF8A8A92)
 
@@ -112,7 +112,7 @@ fun LabCard(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(26.dp))
+            .clip(RoundedCornerShape(12.dp))
             .background(LabColors.Card)
             .padding(padding),
         content = content,
@@ -130,9 +130,9 @@ fun LabStage(
         modifier = modifier
             .fillMaxWidth()
             .height(height)
-            .clip(RoundedCornerShape(18.dp))
+            .clip(RoundedCornerShape(10.dp))
             .background(LabColors.Stage)
-            .border(1.dp, LabColors.StageLine, RoundedCornerShape(18.dp))
+            .border(1.dp, LabColors.StageLine, RoundedCornerShape(10.dp))
             .damageBoundary(),
     ) {
         content()
@@ -240,7 +240,7 @@ fun LabPanel(modifier: Modifier = Modifier, content: @Composable ColumnScope.() 
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(18.dp))
+            .clip(RoundedCornerShape(10.dp))
             .background(LabColors.Row)
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(6.dp),

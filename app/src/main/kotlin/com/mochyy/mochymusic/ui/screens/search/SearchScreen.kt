@@ -53,6 +53,10 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
+import androidx.compose.material3.Button
+import androidx.compose.material3.TextButton
+import androidx.compose.ui.platform.LocalContext
+import com.mochyy.mochymusic.utils.isInternetAvailable
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontWeight
@@ -334,6 +338,8 @@ private fun SearchBrowseContent(
     viewModel: MoodAndGenresViewModel = hiltViewModel(),
 ) {
     val sections by viewModel.moodAndGenres.collectAsState()
+    val failed by viewModel.loadFailed.collectAsState()
+    val context = LocalContext.current
     val bottomInset = LocalPlayerAwareWindowInsets.current
         .asPaddingValues()
         .calculateBottomPadding()
@@ -347,7 +353,38 @@ private fun SearchBrowseContent(
         ),
     ) {
         val list = sections
-        if (list == null) {
+        if (failed) {
+            item(key = "genre_error") {
+                val offline = !isInternetAvailable(context)
+                Column(
+                    Modifier.fillMaxWidth().padding(horizontal = SearchHorizontalPadding, vertical = 36.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(10.dp),
+                ) {
+                    Icon(
+                        painterResource(R.drawable.download),
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(36.dp),
+                    )
+                    Text(
+                        stringResource(if (offline) R.string.azisic_search_offline else R.string.azisic_search_unavailable),
+                        style = MaterialTheme.typography.headlineSmall,
+                    )
+                    if (offline) {
+                        Text(
+                            stringResource(R.string.azisic_search_offline_body),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                    }
+                    Button(onClick = { navController.navigate("auto_playlist/downloaded") }) {
+                        Text(stringResource(R.string.azisic_open_downloads))
+                    }
+                    TextButton(onClick = viewModel::loadGenres) { Text(stringResource(R.string.retry)) }
+                }
+            }
+        } else if (list == null) {
             item(key = "loading") {
                 Box(
                     modifier = Modifier.fillMaxWidth().height(220.dp),

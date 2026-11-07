@@ -12,12 +12,13 @@ If you installed the v1.0.0 Azisic preview, export your data from **Settings →
 
 ## What’s inside
 
-The v1.2.0 source includes the new interface. The download instructions above are for the v1.1.0 preview.
+The v1.3.0 source includes the expanded interface redesign. The download instructions above are for the v1.1.0 preview.
 
-- **Home** puts Liked Songs, History, Library, and Search in a two-column grid. Your existing shelves sit below it.
-- **Search and Library** use artwork tiles and clearer category filters.
-- **Pulse Deck** puts the cover front and center. **Night Session** pairs a rotating record with a compact track view. Switch layouts below the controls in Now Playing.
-- The player menu includes **15-, 30-, and 60-minute sleep timer presets**.
+- **Home** features the current song or a recent track, with one-tap playback and shortcuts to your library.
+- **Search and Library** use artwork-led browsing. If Search cannot load genres, it offers Retry and a route to downloaded songs.
+- **Playlist and album pages** bring the cover, title, and playback actions together in the default Flow layout.
+- **Settings** groups Audio Lab, Appearance, and Storage, with the current player style and backup controls easier to find.
+- **Player Styles** keeps the existing templates, swipe previews, and Edit and Set actions, including Poster, Pulse Deck, and Night Session.
 - **Profile → Developer** lists Abdul Agantal Omar and links to the open-source notices.
 
 ## Preview status

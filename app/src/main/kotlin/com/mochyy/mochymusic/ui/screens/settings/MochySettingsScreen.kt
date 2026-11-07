@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -47,12 +48,15 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.mochyy.mochymusic.R
+import com.mochyy.mochymusic.ui.component.LocalZoomOutOverlayState
+import com.mochyy.mochymusic.ui.screens.update.showAboutSheet
 import com.mochyy.mochymusic.scrobble.ScrobbleSite
 import com.mochyy.mochymusic.ui.screens.settings.importsync.YouTubeSyncRoute
 import com.mochyy.mochymusic.ui.screens.settings.integrations.IntegrationsRoute
@@ -283,11 +287,11 @@ private val SelectedBubbleColor = SearchColors.FieldFocused
 // the header holds the mochy mark with the big "Settings" under it, taller than search's title-only header
 private val SettingsTitleBlockHeight = 62.dp
 private val SettingsMarkSize = 28.dp
-private val IconBgColor = SearchColors.TileHigh
 
 @Composable
 fun MochySettingsScreen(navController: NavController, pane: SettingsPane? = null) {
     val focusManager = LocalFocusManager.current
+    val aboutSheet = LocalZoomOutOverlayState.current
     val (pureBlack) = rememberPreference(com.mochyy.mochymusic.constants.PureBlackKey, defaultValue = false)
     // on a wide screen the list stays put and its pages open beside it
     val open: (String) -> Unit = { route ->
@@ -397,7 +401,7 @@ fun MochySettingsScreen(navController: NavController, pane: SettingsPane? = null
                                         modifier = Modifier
                                             .size(38.dp)
                                             .clip(CircleShape)
-                                            .background(IconBgColor),
+                                            .background(MaterialTheme.colorScheme.surfaceContainerHigh),
                                         contentAlignment = Alignment.Center
                                     ) {
                                         Icon(
@@ -430,148 +434,83 @@ fun MochySettingsScreen(navController: NavController, pane: SettingsPane? = null
                 }
             }
 
-            // Normal Settings Content (fades smoothly to black when search is focused)
             if (showContent) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .graphicsLayer { alpha = contentAlpha }
+                        .padding(horizontal = 20.dp)
+                        .graphicsLayer { alpha = contentAlpha },
+                    verticalArrangement = Arrangement.spacedBy(5.dp),
                 ) {
-                    // Recommended Item Card
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 20.dp)
-                            .clip(RoundedCornerShape(24.dp))
-                            .background(BubbleColor)
-                            .clickable { recommendedItem.onClick(open) }
-                            .padding(18.dp)
-                    ) {
-                        Column {
-                            Text(
-                                text = stringResource(R.string.settings_recommended_item),
-                                fontFamily = InterFontFamily,
-                                fontWeight = FontWeight.Medium,
-                                fontSize = 13.sp,
-                                color = Color.White.copy(alpha = 0.55f)
-                            )
-
-                            Spacer(modifier = Modifier.height(14.dp))
-
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(44.dp)
-                                        .clip(CircleShape)
-                                        .background(IconBgColor),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Icon(
-                                        painter = painterResource(recommendedItem.iconRes),
-                                        contentDescription = null,
-                                        tint = Color.White,
-                                        modifier = Modifier.size(22.dp)
-                                    )
-                                }
-
-                                Spacer(modifier = Modifier.width(12.dp))
-
-                                Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                                    Text(
-                                        text = stringResource(recommendedItem.titleRes),
-                                        fontFamily = InterFontFamily,
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = 16.sp,
-                                        color = Color.White
-                                    )
-                                    Text(
-                                        text = stringResource(recommendedItem.breadcrumbRes),
-                                        fontFamily = InterFontFamily,
-                                        fontSize = 13.sp,
-                                        color = Color.White.copy(alpha = 0.55f)
-                                    )
-                                }
-                            }
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(18.dp))
-
-                    // Divider
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 20.dp)
-                            .height(0.8.dp)
-                            .background(Color.White.copy(alpha = 0.1f))
+                    CategoryBubble(
+                        title = stringResource(R.string.settings_audio_lab_category),
+                        iconRes = R.drawable.equalizer,
+                        selected = selected == "audio_lab",
+                        onClick = { open("audio_lab") },
+                        description = stringResource(R.string.azisic_settings_audio_detail),
+                    )
+                    CategoryBubble(
+                        title = stringResource(R.string.azisic_settings_appearance),
+                        iconRes = R.drawable.palette,
+                        selected = selected == "customisation_settings",
+                        onClick = { open("customisation_settings") },
+                        description = stringResource(R.string.azisic_settings_appearance_detail),
+                    )
+                    CategoryBubble(
+                        title = stringResource(R.string.storage),
+                        iconRes = R.drawable.storage,
+                        selected = selected == "storage_settings",
+                        onClick = { open("storage_settings") },
+                        description = stringResource(R.string.azisic_settings_storage_detail),
+                    )
+                    CategoryBubble(
+                        title = stringResource(R.string.settings_app_behaviour),
+                        iconRes = R.drawable.settings,
+                        selected = selected == "general_settings",
+                        onClick = { open("general_settings") },
+                        description = stringResource(R.string.azisic_settings_behavior_detail),
                     )
 
-                    Spacer(modifier = Modifier.height(18.dp))
+                    Spacer(Modifier.height(10.dp))
+                    CategoryBubble(
+                        title = stringResource(R.string.integrations),
+                        iconRes = R.drawable.integration,
+                        selected = selected == IntegrationsRoute,
+                        onClick = { open(IntegrationsRoute) },
+                    )
+                    CategoryBubble(
+                        title = stringResource(R.string.settings_modules_category),
+                        iconRes = R.drawable.library_add,
+                        selected = selected == "modules",
+                        onClick = { open("modules") },
+                    )
+                    com.mochyy.mochymusic.ui.screens.settings.modules.ModuleSettingsPages(open = open, selected = selected)
+                    CategoryBubble(
+                        title = stringResource(R.string.about),
+                        iconRes = R.drawable.info,
+                        onClick = { aboutSheet.showAboutSheet() },
+                    )
 
-                    // Separate Bubble Pills for Categories (No outlines, individually bubble-wrapped)
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 20.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        // in the order of the design: sound first, then how the app acts and looks, then the rest
-                        CategoryBubble(
-                            title = stringResource(R.string.settings_audio_lab_category),
-                            iconRes = R.drawable.equalizer,
-                            selected = selected == "audio_lab",
-                            onClick = { open("audio_lab") }
-                        )
-
-                        CategoryBubble(
-                            title = stringResource(R.string.settings_app_behaviour),
-                            iconRes = R.drawable.settings,
-                            selected = selected == "general_settings",
-                            onClick = { open("general_settings") }
-                        )
-
-                        CategoryBubble(
-                            title = stringResource(R.string.settings_customisation_category),
-                            iconRes = R.drawable.palette,
-                            selected = selected == "customisation_settings",
-                            onClick = { open("customisation_settings") }
-                        )
-
-                        CategoryBubble(
-                            title = stringResource(R.string.storage),
-                            iconRes = R.drawable.storage,
-                            selected = selected == "storage_settings",
-                            onClick = { open("storage_settings") }
-                        )
-
-                        CategoryBubble(
-                            title = stringResource(R.string.integrations),
-                            iconRes = R.drawable.integration,
-                            selected = selected == IntegrationsRoute,
-                            onClick = { open(IntegrationsRoute) }
-                        )
-
-                        CategoryBubble(
-                            title = stringResource(R.string.settings_modules_category),
-                            iconRes = R.drawable.library_add,
-                            selected = selected == "modules",
-                            onClick = { open("modules") }
-                        )
-
-                        // pages the modules that are on bring to settings, right under modules
-                        com.mochyy.mochymusic.ui.screens.settings.modules.ModuleSettingsPages(open = open, selected = selected)
-                    }
+                    Spacer(Modifier.height(10.dp))
+                    Text(
+                        stringResource(R.string.settings_recommended_item),
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(start = 12.dp, bottom = 2.dp),
+                    )
+                    CategoryBubble(
+                        title = stringResource(recommendedItem.titleRes),
+                        iconRes = recommendedItem.iconRes,
+                        onClick = { recommendedItem.onClick(open) },
+                        description = stringResource(recommendedItem.breadcrumbRes),
+                    )
                 }
             }
 
             val bottomInset = com.mochyy.mochymusic.LocalPlayerAwareWindowInsets.current.asPaddingValues()
             val bottomPadding = bottomInset.calculateBottomPadding()
-            val bottomSpacerHeight = maxOf(340.dp, bottomPadding + 160.dp)
+            val bottomSpacerHeight = bottomPadding + 32.dp
 
-            // Headroom spacer for smooth scrolling past collapse threshold and bottom bar
             Spacer(modifier = Modifier.height(bottomSpacerHeight))
         }
         }
@@ -591,7 +530,7 @@ fun MochySettingsScreen(navController: NavController, pane: SettingsPane? = null
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     Icon(
-                        painter = painterResource(R.drawable.ic_mochy_mark),
+                        painter = painterResource(R.drawable.ic_azisic_signal),
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(SettingsMarkSize),
@@ -654,45 +593,43 @@ internal fun CategoryBubble(
     title: String,
     iconRes: Int,
     onClick: () -> Unit,
-    // lit while its page is open beside the list on a wide screen
     selected: Boolean = false,
+    description: String? = null,
 ) {
-    Box(
+    val colors = MaterialTheme.colorScheme
+    Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(56.dp)
-            .clip(RoundedCornerShape(8.dp))
-            .background(if (selected) SelectedBubbleColor else BubbleColor)
-            .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp),
-        contentAlignment = Alignment.CenterStart
+            .clip(RoundedCornerShape(9.dp))
+            .background(if (selected) SelectedBubbleColor else colors.surfaceContainerLow)
+            .clickable(role = Role.Button, onClick = onClick)
+            .heightIn(min = if (description == null) 52.dp else 66.dp)
+            .padding(horizontal = 12.dp, vertical = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
+        Box(
+            Modifier.size(36.dp).background(colors.surfaceContainerHigh, RoundedCornerShape(7.dp)),
+            contentAlignment = Alignment.Center,
         ) {
-            Box(
-                modifier = Modifier
-                    .size(36.dp)
-                    .clip(RoundedCornerShape(6.dp))
-                    .background(IconBgColor),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    painter = painterResource(iconRes),
-                    contentDescription = null,
-                    tint = Color.White,
-                    modifier = Modifier.size(20.dp)
-                )
-            }
-            Spacer(modifier = Modifier.width(12.dp))
-            Text(
-                text = title,
-                fontFamily = InterFontFamily,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 17.sp,
-                color = Color.White,
+            Icon(
+                painterResource(iconRes),
+                contentDescription = null,
+                tint = if (description != null || selected) colors.primary else colors.onSurfaceVariant,
+                modifier = Modifier.size(20.dp),
             )
         }
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+            Text(title, style = MaterialTheme.typography.titleMedium, color = colors.onSurface)
+            if (description != null) {
+                Text(description, style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant)
+            }
+        }
+        Icon(
+            painterResource(R.drawable.arrow_forward),
+            contentDescription = null,
+            tint = colors.onSurfaceVariant,
+            modifier = Modifier.size(15.dp),
+        )
     }
 }

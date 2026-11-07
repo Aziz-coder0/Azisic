@@ -410,4 +410,17 @@
     <string name="azisic_unlike_track">Remove from Liked songs</string>
     <string name="azisic_player_layouts">Layouts</string>
     <string name="azisic_welcome_description">Play your library or find something new.</string>
+    <string name="azisic_home_rotation">Your rotation</string>
+    <string name="azisic_search_offline">You’re offline</string>
+    <string name="azisic_search_unavailable">Couldn’t load genres</string>
+    <string name="azisic_search_offline_body">Your downloaded music is still available.</string>
+    <string name="azisic_open_downloads">Open downloads</string>
+    <string name="azisic_settings_audio_detail">Equalizer, playback, and output</string>
+    <string name="azisic_settings_appearance">Appearance</string>
+    <string name="azisic_settings_appearance_detail">Theme, icons, and player styles</string>
+    <string name="azisic_settings_storage_detail">Downloads, cache, and backups</string>
+    <string name="azisic_settings_behavior_detail">Playback preferences and app behavior</string>
+    <string name="azisic_current_style">Current player style</string>
+    <string name="azisic_storage_used">%1$s used by Azisic</string>
+    <string name="azisic_queue_up_next">Up next</string>
 </resources>

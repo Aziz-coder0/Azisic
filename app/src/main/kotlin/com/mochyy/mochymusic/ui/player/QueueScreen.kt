@@ -23,6 +23,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
@@ -553,8 +554,8 @@ private fun QueueSectionHeader(
 ) {
     val title = when (section) {
         QueueSection.HISTORY -> stringResource(R.string.history)
-        QueueSection.NOW_PLAYING -> "Now Playing"
-        QueueSection.CONTINUE -> "Continue Playing"
+        QueueSection.NOW_PLAYING -> stringResource(R.string.now_playing)
+        QueueSection.CONTINUE -> stringResource(R.string.azisic_queue_up_next)
         QueueSection.AUTOPLAY -> "Autoplay"
     }
     val subtitle = when (section) {
@@ -572,10 +573,8 @@ private fun QueueSectionHeader(
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = title,
-                fontSize = 17.sp,
-                lineHeight = 22.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White,
+                style = MaterialTheme.typography.titleLarge,
+                color = if (section == QueueSection.NOW_PLAYING) MaterialTheme.colorScheme.primary else Color.White,
             )
             if (subtitle != null) {
                 Text(
@@ -590,7 +589,7 @@ private fun QueueSectionHeader(
         }
         if (section == QueueSection.HISTORY) {
             Text(
-                text = "Clear",
+                text = stringResource(R.string.clear),
                 fontSize = 13.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = Color.White.copy(alpha = 0.85f),
@@ -634,7 +633,7 @@ private fun QueueSongRow(
             .background(
                 when {
                     isDragging -> Color.White.copy(alpha = 0.12f)
-                    nowPlaying -> Color.White.copy(alpha = 0.07f)
+                    nowPlaying -> MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
                     else -> Color.Transparent
                 }
             )

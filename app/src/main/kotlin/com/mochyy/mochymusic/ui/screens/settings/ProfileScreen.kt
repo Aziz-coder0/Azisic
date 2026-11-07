@@ -772,7 +772,7 @@ fun ProfileScreen(navController: NavController) {
 
             // ---- logo, and the greeting sliding into the bar beside it ----
             Icon(
-                painter = painterResource(R.drawable.ic_mochy_mark),
+                painter = painterResource(R.drawable.ic_azisic_signal),
                 contentDescription = "Azisic",
                 tint = Color.White,
                 modifier = Modifier
@@ -1069,12 +1069,18 @@ private fun DeveloperCard(onClick: () -> Unit) {
             .clickable(onClick = onClick).padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Icon(painterResource(R.drawable.ic_mochy_mark), null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(29.dp))
+        Icon(painterResource(R.drawable.ic_azisic_signal), null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(29.dp))
         Spacer(Modifier.width(12.dp))
         Column(Modifier.weight(1f)) {
             Text(stringResource(R.string.azisic_developer_title), color = MaterialTheme.colorScheme.primary, fontSize = 12.sp)
             Text(stringResource(R.string.azisic_developer_name), color = Color.White, fontSize = 15.sp, fontWeight = FontWeight.Bold)
         }
+        Icon(
+            painterResource(R.drawable.arrow_forward),
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.size(16.dp),
+        )
     }
 }
 

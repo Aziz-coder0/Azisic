@@ -76,8 +76,8 @@ import com.mochyy.mochymusic.viewmodels.AudioLabViewModel
 import kotlin.math.roundToInt
 import kotlin.math.sin
 
-private val HubCard = Color(0xFF222225)
-private val Sketch = Color(0xFF6A6A70)
+private val HubCard = LabColors.Card
+private val Sketch = Color(0xFFD49268)
 
 @Composable
 fun AudioLabScreen(

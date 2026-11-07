@@ -29,7 +29,9 @@ build:
           fi
 
           chmod +x gradlew
-          ./gradlew :app:assembleUniversalFossDebug --no-configuration-cache --console=plain
+          ./gradlew :app:assembleUniversalFossDebug --no-configuration-cache --no-parallel \
+            --max-workers=2 -Pkotlin.compiler.execution.strategy=in-process \
+            -Dorg.gradle.jvmargs="-Xmx4608m -XX:+UseG1GC -Dfile.encoding=UTF-8" --console=plain
           cp app/build/outputs/apk/universalFoss/debug/*.apk Azisic-preview.apk
     - eas/upload_artifact:
         name: Upload Azisic APK

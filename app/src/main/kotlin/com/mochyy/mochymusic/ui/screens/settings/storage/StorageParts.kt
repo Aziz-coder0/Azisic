@@ -63,14 +63,14 @@ import com.mochyy.mochymusic.ui.theme.InterFontFamily
 import kotlin.math.roundToInt
 import com.mochyy.mochymusic.ui.component.RemoteFocus
 
-internal val StorageCard = Color(0xFF1C1C1E)
-internal val StorageTrack = Color(0xFF3A3A3C)
-internal val StorageMuted = Color(0xFF8E8E93)
+internal val StorageCard = Color(0xFF241B2B)
+internal val StorageTrack = Color(0xFF3A2D44)
+internal val StorageMuted = Color(0xFFC4B7CE)
 internal val StorageDanger = Color(0xFFF07A70)
 
-internal val MochyGreen = Color(0xFF86EF7F)
+internal val StorageAccent = Color(0xFFFFA653)
 internal val OthersGrey = Color(0xFF6E6E73)
-internal val CacheOrange = Color(0xFFF5B26B)
+internal val StorageCache = Color(0xFFAC8DBF)
 internal val DatabaseRed = Color(0xFFEE6E5E)
 internal val AppDataBlue = Color(0xFF6878F0)
 
@@ -103,7 +103,7 @@ internal fun StorageCardColumn(modifier: Modifier = Modifier, content: @Composab
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(24.dp))
+            .clip(RoundedCornerShape(12.dp))
             .background(StorageCard)
             .padding(horizontal = 20.dp, vertical = 18.dp),
         content = content,

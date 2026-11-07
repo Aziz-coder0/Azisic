@@ -451,7 +451,7 @@ fun LibraryListRow(
 }
 
 /** Home's row cover, so the Library's rows match it exactly. */
-private val LibraryRowCoverCorner = 14.dp
+private val LibraryRowCoverCorner = 8.dp
 private val LibraryRowCoverSize = 54.dp
 private val LibraryRowCoverShape = RoundedCornerShape(LibraryRowCoverCorner)
 

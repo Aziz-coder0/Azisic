@@ -25,6 +25,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.ui.graphics.asComposeRenderEffect
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.graphics.nativeCanvas
@@ -1844,6 +1845,8 @@ private fun SheetPillGlass(
         }
     }
     if (!mounted) return
+    val playback = LocalPlayerConnection.current?.uiState?.progressState?.collectAsState()
+    val colors = MaterialTheme.colorScheme
     val density = LocalDensity.current
     val startPx = with(density) { pillFrame.start.toPx() }
     val endPx = with(density) { pillFrame.end.toPx() }
@@ -1860,7 +1863,23 @@ private fun SheetPillGlass(
             state = glassState,
             pureBlack = pureBlack,
             accentWash = accentWash,
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().drawWithContent {
+                drawContent()
+                val progress = playback?.value ?: return@drawWithContent
+                if (merged || progress.duration <= 0L || progressProvider() >= 0.12f) return@drawWithContent
+                val ratio = (progress.position.toFloat() / progress.duration).coerceIn(0f, 1f)
+                val inset = 24.dp.toPx()
+                val width = size.width - inset * 2
+                if (width <= 0f) return@drawWithContent
+                val lineY = size.height - 5.dp.toPx()
+                val start = Offset(inset, lineY)
+                val alpha = 1f - progressProvider() / 0.12f
+                val thickness = 2.dp.toPx()
+                drawLine(colors.outlineVariant, start, Offset(inset + width, lineY), thickness, StrokeCap.Round, alpha = alpha)
+                if (ratio > 0f) {
+                    drawLine(colors.primary, start, Offset(inset + width * ratio, lineY), thickness, StrokeCap.Round, alpha = alpha)
+                }
+            },
         )
     }
 }

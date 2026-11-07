@@ -26,6 +26,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -151,7 +152,9 @@ fun CustomisationScreen(navController: NavController) {
     val statusTop = WindowInsets.stableStatusBars.asPaddingValues().calculateTopPadding()
     val bottomInset = LocalPlayerAwareWindowInsets.current.asPaddingValues().calculateBottomPadding()
     val titles = CustomiseSection.entries.associateWith { stringResource(it.titleRes) }
-    val shown = CustomiseSection.entries.filter { it.available && it.matches(query, titles.getValue(it)) }
+    val shown = CustomiseSection.entries
+        .filter { it.available && it.matches(query, titles.getValue(it)) }
+        .sortedBy { it != CustomiseSection.PLAYER }
     val scroll = rememberScrollState()
     // nothing stays pinned over this page, so a highlighted section lands just under the status bar
     val settingsScroll = remember(scroll, statusTop) { SettingsScroll(scroll, statusTop + 16.dp) }
@@ -162,7 +165,7 @@ fun CustomisationScreen(navController: NavController) {
             contentAlignment = Alignment.TopCenter,
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.Black)
+                .background(MaterialTheme.colorScheme.background)
                 .verticalScroll(scroll),
         ) {
             Column(
@@ -174,7 +177,7 @@ fun CustomisationScreen(navController: NavController) {
             ) {
                 LabBackButton(onBack = { navController.navigateUp() })
                 Spacer(Modifier.height(14.dp))
-                Text(text = stringResource(R.string.customise_title), style = PageTitleStyle, color = Color.White)
+                Text(text = stringResource(R.string.azisic_settings_appearance), style = PageTitleStyle, color = Color.White)
                 Spacer(Modifier.height(16.dp))
                 SubSettingsSearchBar(query = query, onQueryChange = { query = it })
                 Spacer(Modifier.height(18.dp))

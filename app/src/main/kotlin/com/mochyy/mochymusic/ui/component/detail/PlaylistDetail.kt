@@ -254,6 +254,7 @@ fun <A> featuredArtistsOf(
         .map { (artistId, names) -> FeaturedArtistUi(id = artistId, name = names.first()) }
 
 // passes the scaffold's cover composable down to PlaylistHeader when classic or minimal style draws a framed cover
+private val LocalPlaylistInlineCover = staticCompositionLocalOf { false }
 private val LocalPlaylistFramedCover = staticCompositionLocalOf<(@Composable (Modifier) -> Unit)?> { null }
 
 /** the cover band at the top of a playlist, shared by the header item and the backdrop behind it */
@@ -328,7 +329,9 @@ fun PlaylistDetailScaffold(
     val handedCover = remember(sharedElementKey) { containerTransformCover(sharedElementKey) }
     val coverUrl = handedCover ?: coverUrl
     val playlistStyle by rememberEnumPreference(PlaylistStyleKey, defaultValue = PlaylistStyle.FLOW)
-    val effectiveShowCover = showCover && (roundCapsule || playlistStyle == PlaylistStyle.FLOW)
+    val inlineCover = showCover && !roundCapsule && playlistStyle == PlaylistStyle.FLOW &&
+        (cover != null || !coverUrl.isNullOrEmpty())
+    val effectiveShowCover = showCover && !inlineCover && (roundCapsule || playlistStyle == PlaylistStyle.FLOW)
     val effectiveRoundCapsule = roundCapsule || (showCover && playlistStyle == PlaylistStyle.MINIMAL)
     val classicBackdrop = showCover && !roundCapsule && playlistStyle == PlaylistStyle.CLASSIC
     val framedCover: (@Composable (Modifier) -> Unit)? = remember(cover, coverUrl) {
@@ -357,7 +360,8 @@ fun PlaylistDetailScaffold(
     // the bottom nav scrim picks this up, so the whole screen reads as one colour. a page that
     // sinks to black hands it black, or the nav would sit in a band of the theme colour
     val accent = LocalDetailAccentColor.current
-    SideEffect { accent.value = if (effectiveRoundCapsule) Color.Black else themeColor }
+    val pageColor = MaterialTheme.colorScheme.background
+    SideEffect { accent.value = if (inlineCover) pageColor else if (effectiveRoundCapsule) Color.Black else themeColor }
     DisposableEffect(Unit) { onDispose { accent.value = null } }
 
     val coverHeight = playlistCoverHeight()
@@ -365,6 +369,7 @@ fun PlaylistDetailScaffold(
     val effectiveHeaderHeight = when {
         headerHeight != null -> headerHeight
         classicBackdrop -> classicHeaderHeight
+        inlineCover -> playlistCompactHeaderTop() + 152.dp
         !effectiveShowCover -> playlistCompactHeaderHeight()
         else -> coverHeight
     }
@@ -395,11 +400,15 @@ fun PlaylistDetailScaffold(
     // before the bar collapses
     val pillNeedsGlass = rememberUpdatedState(modeBar is PlaylistModeBar.EditOrder)
 
-    CompositionLocalProvider(LocalPlaylistFramedCover provides framedCover) {
+    CompositionLocalProvider(
+        LocalPlaylistFramedCover provides framedCover,
+        LocalPlaylistInlineCover provides inlineCover,
+    ) {
     Box(
         modifier = Modifier
             .fillMaxSize()
             .containerTransformTarget(sharedElementKey)
+            .then(if (inlineCover) Modifier.background(pageColor) else Modifier)
             .then(
                 if (effectiveRoundCapsule) {
                     // pinned to the screen, not the list: the colour holds at the top and settles
@@ -943,6 +952,7 @@ fun PlaylistHeader(
 ) {
     val playlistStyle by rememberEnumPreference(PlaylistStyleKey, defaultValue = PlaylistStyle.FLOW)
     val framedCover = LocalPlaylistFramedCover.current
+    val useInline = !compact && LocalPlaylistInlineCover.current && framedCover != null
     val useMinimal = compact || playlistStyle == PlaylistStyle.MINIMAL
     val useClassic = !compact && playlistStyle == PlaylistStyle.CLASSIC
 
@@ -972,30 +982,49 @@ fun PlaylistHeader(
                     }
                 }
             }
-            Text(
-                text = title,
-                style = if (useMinimal) PlaylistCompactTitleStyle else PlaylistTitleStyle,
-                color = Color.White,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-            )
-            if (creators.isNotEmpty()) {
-                Spacer(Modifier.height(3.dp))
-                CreatorRow(creators, onCreatorClick)
-            }
-            if (!description.isNullOrBlank()) {
-                Spacer(Modifier.height(5.dp))
-                PlaylistDescription(description)
-            }
-            if (stats.isNotEmpty()) {
-                Spacer(Modifier.height(if (description.isNullOrBlank()) 3.dp else 6.dp))
+            val metadata: @Composable () -> Unit = {
                 Text(
-                    text = stats,
-                    style = PlaylistStatsStyle,
-                    color = Color.White.copy(alpha = 0.62f),
-                    maxLines = 1,
+                    text = title,
+                    style = if (useMinimal || useInline) PlaylistCompactTitleStyle else PlaylistTitleStyle,
+                    color = Color.White,
+                    maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                 )
+                if (creators.isNotEmpty()) {
+                    Spacer(Modifier.height(3.dp))
+                    CreatorRow(creators, onCreatorClick)
+                }
+                if (!description.isNullOrBlank()) {
+                    Spacer(Modifier.height(5.dp))
+                    PlaylistDescription(description)
+                }
+                if (stats.isNotEmpty()) {
+                    Spacer(Modifier.height(if (description.isNullOrBlank()) 3.dp else 6.dp))
+                    Text(
+                        text = stats,
+                        style = PlaylistStatsStyle,
+                        color = Color.White.copy(alpha = 0.62f),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
+            }
+            if (useInline && framedCover != null) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                ) {
+                    Box(
+                        Modifier.size(108.dp)
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(MaterialTheme.colorScheme.surfaceContainerHigh),
+                    ) {
+                        framedCover(Modifier.fillMaxSize())
+                    }
+                    Column(Modifier.weight(1f)) { metadata() }
+                }
+            } else {
+                metadata()
             }
             Spacer(Modifier.height(16.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -1028,7 +1057,7 @@ fun PlaylistHeader(
         }
     }
 
-    if (useMinimal || useClassic) {
+    if (useMinimal || useClassic || useInline) {
         Column(
             modifier = modifier
                 .fillMaxWidth()
@@ -1103,13 +1132,14 @@ internal fun PlaylistDescription(text: String, modifier: Modifier = Modifier) {
 @Composable
 internal fun PlayPill(isPlaying: Boolean, onClick: () -> Unit) {
     val interaction = remember { MutableInteractionSource() }
+    val colors = MaterialTheme.colorScheme
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .pressBounce(interaction)
-            .height(33.dp)
+            .height(44.dp)
             .clip(RoundedCornerShape(50))
-            .background(PillFill)
+            .background(colors.primary)
             .clickable(interactionSource = interaction, indication = RemoteFocus, onClick = onClick)
             .animateContentSize(spring(dampingRatio = 0.7f, stiffness = 500f))
             .padding(start = 21.dp, end = 17.dp)
@@ -1122,7 +1152,7 @@ internal fun PlayPill(isPlaying: Boolean, onClick: () -> Unit) {
             Icon(
                 painter = painterResource(if (playing) R.drawable.ic_untitled_pause else R.drawable.ic_untitled_play),
                 contentDescription = null,
-                tint = PillContent,
+                tint = colors.onPrimary,
                 modifier = Modifier.size(15.dp),
             )
         }
@@ -1133,9 +1163,9 @@ internal fun PlayPill(isPlaying: Boolean, onClick: () -> Unit) {
             label = "playPillLabel",
         ) { playing ->
             Text(
-                text = if (playing) "Pause" else "Play",
+                text = stringResource(if (playing) R.string.pause else R.string.play),
                 style = PillLabelStyle,
-                color = PillContent,
+                color = colors.onPrimary,
             )
         }
     }

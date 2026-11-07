@@ -508,12 +508,16 @@ private fun HomeShell() {
                         Modifier.padding(horizontal = HomeContentInset),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
+                        Bone(width = 145.dp, height = 24.dp)
+                        BoxWithConstraints(Modifier.fillMaxWidth()) {
+                            Bone(width = maxWidth, height = (maxWidth * 0.43f).coerceAtMost(160.dp), shape = RoundedCornerShape(12.dp))
+                        }
                         repeat(2) {
                             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                 repeat(2) {
                                     Bone(
                                         width = 150.dp,
-                                        height = 56.dp,
+                                        height = 48.dp,
                                         shape = RoundedCornerShape(8.dp),
                                         modifier = Modifier.weight(1f),
                                     )
@@ -553,7 +557,7 @@ private fun HomeShell() {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
-                painter = painterResource(R.drawable.ic_mochy_mark),
+                painter = painterResource(R.drawable.ic_azisic_signal),
                 contentDescription = "Azisic",
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier
@@ -1338,8 +1342,16 @@ fun HomeScreen(
                 when (homeStyle) {
                     HomeStyle.AZISIC -> {
                         item(key = "azisic_home", contentType = "hero") {
+                            val current = mediaMetadataState.value
+                            val recent = startListeningSongs.firstOrNull()
                             AzisicHomeHeader(
-                                track = mediaMetadataState.value,
+                                track = current ?: recent?.toMediaMetadata(),
+                                isCurrent = current != null,
+                                isPlaying = current != null && isPlayingNow(),
+                                onPlay = {
+                                    if (current != null) playerConnection.togglePlayPause()
+                                    else recent?.let(playSong)
+                                },
                                 onOpenPlayer = { playerBottomSheetState?.expandSoft() },
                                 onSearch = { navController.navigateToTab(Screens.Search.route) },
                                 onLiked = { navController.navigate("auto_playlist/liked") },
@@ -1851,7 +1863,7 @@ fun HomeScreen(
                             modifier = Modifier.graphicsLayer { alpha = 1f - topBarProgress },
                         ) {
                         Icon(
-                            painter = painterResource(R.drawable.ic_mochy_mark),
+                            painter = painterResource(R.drawable.ic_azisic_signal),
                             contentDescription = "Azisic",
                             tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier
